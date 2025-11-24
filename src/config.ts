@@ -53,7 +53,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/demo-avatar.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "https://p.ssl.qhimg.com/t11938a0349d15dd62d0c09b88a.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "Suzuka",
 	bio: "Hanamiya University News",
 	links: [
