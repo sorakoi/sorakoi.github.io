@@ -9,7 +9,7 @@ import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "花宫学园",
-	subtitle: "校园事务一站通",
+	subtitle: "学园事务一站通",
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
 		hue: 250, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
@@ -43,6 +43,11 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "公告",
+			url: "./archive/?category=%E5%85%AC%E5%91%8A", // Internal links should not include the base path, as it is automatically added
+			external: false, // Show an external link icon and will open in a new tab
+		},
 		LinkPreset.About,
 		{
 			name: "GitHub",
@@ -55,19 +60,19 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "https://p.ssl.qhimg.com/t11938a0349d15dd62d0c09b88a.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "Suzuka",
-	bio: "Hanamiya University News",
+	bio: "从晴朗的朝色泛起之际开始",
 	links: [
 		{
 			name: "Twitter",
-			icon: "fa6-brands:twitter", // Visit https://icones.js.org/ for icon codes
+			icon: "fa6-regular:snowflake", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
-			url: "https://twitter.com",
+			url: "https://tianshi.me",
 		},
 		{
-			name: "Steam",
-			icon: "fa6-brands:steam",
-			url: "https://store.steampowered.com",
+			name: "Bilibili",
+			icon: "fa6-brands:bilibili",
+			url: "https://www.bilibili.com",
 		},
 		{
 			name: "GitHub",
