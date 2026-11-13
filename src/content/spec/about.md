@@ -4,4 +4,6 @@
 ## 站点开源
 ::github{repo="sorakoi/sorakoi.github.io"}
 
+Powered by [Astro](https://astro.build) & [Fuwari](https://github.com/saicaca/fuwari)
+
 > © 澄空学园佳树委员会/澄空学园宁宁部
