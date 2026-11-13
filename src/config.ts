@@ -17,7 +17,13 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "assets/images/banner.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		src: "assets/images/banner-1.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		images: [
+			{ src: "assets/images/banner-1.jpg", credit: "Camus" },
+			{ src: "assets/images/banner-2.jpg", credit: "荻原杏子" },
+			{ src: "assets/images/banner-3.jpg", credit: "rubi" },
+		],
+		interval: 8, // Seconds each slide stays on screen
 		position: "top", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: true, // Display the credit text of the banner image
