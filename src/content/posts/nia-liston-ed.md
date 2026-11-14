@@ -14,5 +14,3 @@ TV アニメ『凶乱令嬢ニア・リストン 病弱令嬢に転生した神�
 歌是「ときめきアン・ドゥ・トロワ♪」，唱的是魔法映像（マジックビジョン）ひろめ隊。
 
 <iframe width="100%" height="468" src="https://www.youtube.com/embed/FGhd4D_h9xc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
-![](/images/kv1.webp)
