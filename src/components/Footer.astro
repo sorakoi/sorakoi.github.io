@@ -13,7 +13,7 @@ const currentYear = new Date().getFullYear();
     <div class="transition text-50 text-sm text-center">
         &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. All Rights Reserved. /
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('rss.xml')}>RSS</a> /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>Sitemap</a> /
-        本站隶属于澄空学园 / 鸣谢：星织计算实验室
+        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>Sitemap</a><span class="hidden sm:inline"> /</span>
+        <span class="block sm:inline">本站隶属于澄空学园 / 鸣谢：星织计算实验室</span>
     </div>
 </div>

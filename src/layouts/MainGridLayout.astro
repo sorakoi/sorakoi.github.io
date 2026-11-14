@@ -11,8 +11,10 @@ import { siteConfig } from "../config";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
+	BANNER_HEIGHT_HOME_VISIBLE,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
+import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -47,8 +49,14 @@ const bannerVisiblePct = 100 / bannerImages.length;
 const bannerFadeInPct = (1.2 / bannerCycle) * 100;
 const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 
+// Home page uses a taller banner, inner pages keep the original height.
+const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
+const bannerVisibleHeight = isHomePage
+	? BANNER_HEIGHT_HOME_VISIBLE
+	: BANNER_HEIGHT;
+
 const mainPanelTop = siteConfig.banner.enable
-	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
+	? `calc(${bannerVisibleHeight}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
 	: "5.5rem";
 ---
 
