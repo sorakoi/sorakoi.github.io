@@ -99,7 +99,7 @@ const mainPanelTop = siteConfig.banner.enable
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
+    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto layout-width-transition">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"
         >
@@ -127,7 +127,7 @@ const mainPanelTop = siteConfig.banner.enable
 
 <!-- The things that should be under the banner, only the TOC for now -->
 <div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
+    <div class="relative max-w-[var(--page-width)] mx-auto layout-width-transition">
         <!-- TOC component -->
         {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
             {"toc-hide": siteConfig.banner.enable}]}
@@ -161,6 +161,10 @@ const mainPanelTop = siteConfig.banner.enable
 	height: 30%;
 	background: linear-gradient(to bottom, transparent 0%, var(--page-bg) 100%);
 	pointer-events: none;
+}
+/* Match the navbar's width transition (Layout.astro sets #top-row to 300ms) */
+.layout-width-transition {
+	transition: max-width 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 @keyframes bannerCycle {
 	0% { opacity: 0; }
