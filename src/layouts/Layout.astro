@@ -173,10 +173,10 @@ const bannerOffset =
 
 /* Wide layout. The width variable is inlined by define:vars on both <html> and <body>,
    so it has to be overridden with !important on both to actually take effect.
-   max() keeps the default 75rem on narrow viewports, where 90vw would be *narrower*. */
+   Capped at 1536px (80% of 1920), and never narrower than the 75rem default. */
 :root.wide-layout,
 :root.wide-layout body {
-	--page-width: max(75rem, 90vw) !important;
+	--page-width: min(1536px, max(75rem, 80vw)) !important;
 }
 
 /* Wide layout leaves almost no side room, so the TOC would be squeezed */
