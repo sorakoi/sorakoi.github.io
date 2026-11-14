@@ -24,6 +24,7 @@ export const siteConfig: SiteConfig = {
 			{ src: "/banner/banner-3.jpg", credit: "Amore" },
 			{ src: "/banner/banner-4.jpg", credit: "Amore" },
 			{ src: "/banner/banner-5.jpg", credit: "Amore" },
+			{ src: "/banner/banner-6.jpg", credit: "Amore" },
 		],
 		interval: 8, // Seconds each slide stays on screen
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
