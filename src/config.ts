@@ -26,7 +26,7 @@ export const siteConfig: SiteConfig = {
 			{ src: "/banner/banner-5.jpg", credit: "Amore" },
 		],
 		interval: 8, // Seconds each slide stays on screen
-		position: "top", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
+		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: true, // Display the credit text of the banner image
 			text: "Amore", // Credit text to be displayed
