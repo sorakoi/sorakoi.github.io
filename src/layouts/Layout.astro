@@ -184,7 +184,8 @@ const bannerOffset =
 	display: none;
 }
 
-/* Wide layout: navbar drops its card frame and spans the full width */
+/* Wide layout: navbar spans full width without the rounded card shape,
+   keeping its own background colour and blur from Navbar.astro */
 :root.wide-layout #top-row {
 	max-width: 100%;
 	padding-left: 0;
@@ -194,7 +195,6 @@ const bannerOffset =
 :root.wide-layout #navbar .card-base {
 	max-width: 100%;
 	border-radius: 0;
-	background: transparent !important;
 }
 
 @layer components {
