@@ -1,5 +1,5 @@
 ---
-title: 一段影像
+title: 『凶乱令嬢ニア・リストン』片尾影像
 published: 2026-11-14
 description: 《凶乱令嬢ニア・リストン》片尾影像，无字幕版。
 image: /images/kv1.webp
@@ -9,11 +9,9 @@ draft: false
 lang: zh_CN
 ---
 
-画面换了新的，影像在下面。
+TV アニメ『凶乱令嬢ニア・リストン 病弱令嬢に転生した神殺しの武人の華麗なる無双録』的片尾影像，无字幕版。
 
-TV アニメ『凶乱令嬢ニア・リストン 病弱令嬢に転生した神殺しの武人の華麗なる無双録』
-ノンクレジットエンディング映像
-♪ 魔法映像（マジックビジョン）ひろめ隊「ときめきアン・ドゥ・トロワ♪」
+歌是「ときめきアン・ドゥ・トロワ♪」，唱的是魔法映像（マジックビジョン）ひろめ隊。
 
 <iframe width="100%" height="468" src="https://www.youtube.com/embed/FGhd4D_h9xc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
