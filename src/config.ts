@@ -17,17 +17,19 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "assets/images/banner-1.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		src: "/banner/banner-1.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		images: [
-			{ src: "assets/images/banner-1.jpg", credit: "Camus" },
-			{ src: "assets/images/banner-2.jpg", credit: "荻原杏子" },
-			{ src: "assets/images/banner-3.jpg", credit: "rubi" },
+			{ src: "/banner/banner-1.jpg", credit: "Amore" },
+			{ src: "/banner/banner-2.jpg", credit: "Amore" },
+			{ src: "/banner/banner-3.jpg", credit: "Amore" },
+			{ src: "/banner/banner-4.jpg", credit: "Amore" },
+			{ src: "/banner/banner-5.jpg", credit: "Amore" },
 		],
 		interval: 8, // Seconds each slide stays on screen
 		position: "top", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: true, // Display the credit text of the banner image
-			text: "Camus", // Credit text to be displayed
+			text: "Amore", // Credit text to be displayed
 			url: "", // (Optional) URL link to the original artwork or artist's page
 		},
 	},
