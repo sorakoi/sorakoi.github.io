@@ -132,6 +132,11 @@ const bannerOffset =
 			const hue = localStorage.getItem('hue') || configHue;
 			document.documentElement.style.setProperty('--hue', hue);
 
+			// Restore the wide layout preference before first paint
+			if (localStorage.getItem('wideMode') === 'true') {
+				document.documentElement.classList.add('wide-layout');
+			}
+
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
@@ -165,6 +170,20 @@ const bannerOffset =
 	'banner-height': `${BANNER_HEIGHT}vh`,
 }}>
 @tailwind components;
+
+/* Wide layout. The width variable is inlined by define:vars on both <html> and <body>,
+   so it has to be overridden with !important on both to actually take effect.
+   max() keeps the default 75rem on narrow viewports, where 90vw would be *narrower*. */
+:root.wide-layout,
+:root.wide-layout body {
+	--page-width: max(75rem, 90vw) !important;
+}
+
+/* Wide layout leaves almost no side room, so the TOC would be squeezed */
+:root.wide-layout #toc-wrapper {
+	display: none;
+}
+
 @layer components {
 	.enable-banner.is-home #banner-wrapper {
 		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
