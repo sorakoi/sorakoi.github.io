@@ -76,14 +76,14 @@ function switchTheme() {
     }
 }
 
-function updateWideBtn(wide) {
+function updateWideBtn(wide: boolean) {
     var btn = document.getElementById("wide-mode-switch");
     if (!btn) return;
     btn.style.color = wide ? "var(--primary)" : "";
     btn.title = wide ? "切回标准宽度" : "切换为宽屏";
 }
 
-function applyWideMode(wide) {
+function applyWideMode(wide: boolean) {
     document.documentElement.classList.toggle("wide-layout", wide);
     localStorage.setItem("wideMode", String(wide));
     updateWideBtn(wide);
