@@ -184,6 +184,21 @@ const bannerOffset =
 	display: none;
 }
 
+/* Wide layout: navbar drops its card frame and spans the full width */
+:root.wide-layout #top-row {
+	max-width: 100%;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+:root.wide-layout #navbar .card-base {
+	max-width: 100%;
+	border-radius: 0;
+	background: transparent !important;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
 @layer components {
 	.enable-banner.is-home #banner-wrapper {
 		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
