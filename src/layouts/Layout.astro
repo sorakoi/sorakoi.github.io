@@ -184,8 +184,7 @@ const bannerOffset =
 	display: none;
 }
 
-/* Wide layout: navbar spans full width without the rounded card shape,
-   keeping its own background colour and blur from Navbar.astro */
+/* Wide layout: full-width navbar that only reveals its bar on hover */
 :root.wide-layout #top-row {
 	max-width: 100%;
 	padding-left: 0;
@@ -195,6 +194,22 @@ const bannerOffset =
 :root.wide-layout #navbar .card-base {
 	max-width: 100%;
 	border-radius: 0;
+	background-color: transparent !important;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	transition:
+		background-color 300ms ease,
+		backdrop-filter 300ms ease;
+}
+
+:root.wide-layout #navbar .card-base:hover {
+	background-color: rgba(255, 255, 255, 0.8) !important;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+:root.wide-layout.dark #navbar .card-base:hover {
+	background-color: rgba(0, 0, 0, 0.7) !important;
 }
 
 @layer components {
