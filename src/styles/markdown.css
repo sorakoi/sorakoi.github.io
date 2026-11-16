@@ -97,6 +97,14 @@
         }
     }
 
+    /* Embedded videos keep their native 16:9 ratio instead of a fixed pixel height */
+    iframe {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        border-radius: 0.75rem;
+    }
+
 
     ul, ol {
         li::marker {

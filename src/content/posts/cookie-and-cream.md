@@ -13,7 +13,7 @@ TV 动画《与你相恋到生命尽头》（きみが死ぬまで恋をした�
 
 演唱：トツキ・シーナ（CV：高橋李依）、カガリ・ミミ（CV：日高里菜）
 
-<iframe width="100%" height="468" src="https://www.youtube.com/embed/uIsJuZrY64g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="100%" src="https://www.youtube.com/embed/uIsJuZrY64g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 ---
 
