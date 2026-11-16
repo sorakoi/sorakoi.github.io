@@ -1,7 +1,7 @@
 ---
 title: 『きみが死ぬまで恋をしたい』第12話挿入歌「Cookie & Cream」MV
 published: 2026-11-16
-description: TV 动画《到死为止都想恋爱》第 12 话插入曲「Cookie & Cream」MV。
+description: TV 动画《与你相恋到生命尽头》第 12 话插入曲「Cookie & Cream」MV。
 image: /images/poster-20261116.jpg
 tags: [影像]
 category: 记录
@@ -9,7 +9,7 @@ draft: false
 lang: zh_CN
 ---
 
-TV 动画《到死为止都想恋爱》（きみが死ぬまで恋をしたい）第 12 话插入曲「Cookie & Cream」的 MV。
+TV 动画《与你相恋到生命尽头》（きみが死ぬまで恋をしたい）第 12 话插入曲「Cookie & Cream」的 MV。
 
 演唱：トツキ・シーナ（CV：高橋李依）、カガリ・ミミ（CV：日高里菜）
 
