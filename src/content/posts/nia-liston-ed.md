@@ -5,6 +5,7 @@ description: 《凶乱令嬢ニア・リストン》片尾影像，无字幕版�
 image: /images/kv1.webp
 tags: [影像]
 category: 记录
+author: 澄空学园信息部
 draft: false
 lang: zh_CN
 ---

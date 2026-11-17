@@ -11,6 +11,7 @@ interface Props {
 	updated?: Date;
 	tags: string[];
 	category: string | null;
+	author?: string;
 	hideTagsForMobile?: boolean;
 	hideUpdateDate?: boolean;
 }
@@ -19,6 +20,7 @@ const {
 	updated,
 	tags,
 	category,
+	author = "",
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
 } = Astro.props;
@@ -34,6 +36,17 @@ const className = Astro.props.class;
         </div>
         <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(published)}</span>
     </div>
+
+    <!-- author -->
+    {author && (
+        <div class="flex items-center">
+            <div class="meta-icon"
+            >
+                <Icon name="material-symbols:person-outline-rounded" class="text-xl"></Icon>
+            </div>
+            <span class="text-50 text-sm font-medium whitespace-nowrap">{author}</span>
+        </div>
+    )}
 
     <!-- update date -->
     {!hideUpdateDate && updated && updated.getTime() !== published.getTime() && (

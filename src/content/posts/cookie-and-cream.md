@@ -5,6 +5,7 @@ description: TV 动画《与你相恋到生命尽头》第 12 话插入曲「Coo
 image: /images/poster-20261116.jpg
 tags: [影像]
 category: 记录
+author: 澄空学园信息部
 draft: false
 lang: zh_CN
 ---
