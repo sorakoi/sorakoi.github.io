@@ -1,52 +1,94 @@
 ---
-import { getCollection, render } from "astro:content";
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { profileConfig } from "../config";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 
 const entries = (
 	await getCollection("moments", ({ data }) => !data.draft)
-).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+).sort((a: CollectionEntry<"moments">, b: CollectionEntry<"moments">) => {
+	if (a.data.pinned !== b.data.pinned) return a.data.pinned ? -1 : 1;
+	return b.data.published.valueOf() - a.data.published.valueOf();
+});
 
 const moments = await Promise.all(
 	entries.map(async (entry) => ({
 		id: entry.id,
 		published: entry.data.published,
+		pinned: entry.data.pinned,
+		location: entry.data.location,
 		Content: (await render(entry)).Content,
 	})),
 );
 
-const formatDate = (date: Date) =>
-	`${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`;
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// 统一按 UTC+8 显示，避免构建机时区不同导致日期错位
+const formatTime = (date: Date) => {
+	const t = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+	return `${t.getUTCFullYear()}/${pad(t.getUTCMonth() + 1)}/${pad(t.getUTCDate())} ${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}:${pad(t.getUTCSeconds())} UTC+8`;
+};
 ---
 
 <MainGridLayout title="动态" description="零碎的事情，都记在这里">
-    <div class="card-base px-6 py-6 md:px-9 md:py-7 relative w-full">
-        <div class="flex items-baseline justify-between mb-6">
-            <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 transition">动态</h1>
-            <span class="text-sm text-neutral-400 transition">{moments.length} 条</span>
-        </div>
+    <div class="flex items-baseline justify-between mb-4 px-1">
+        <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 transition">动态</h1>
+        <span class="text-sm text-neutral-400 transition">{moments.length} 条</span>
+    </div>
 
+    <div class="flex flex-col gap-3">
         {
-            moments.length === 0 && (
-                <p class="text-neutral-400 py-8 text-center">还没有动态。</p>
-            )
-        }
-
-        <ul class="flex flex-col">
-            {
-                moments.map((moment) => {
-                    const { Content } = moment;
-                    return (
-                        <li class="group py-5 border-t border-dashed border-[var(--line-divider)] first:border-t-0 first:pt-0 transition">
-                            <time class="text-sm text-neutral-400 tabular-nums transition" datetime={moment.published.toISOString()}>
-                                {formatDate(moment.published)}
-                            </time>
-                            <div class="custom-md mt-2 text-neutral-700 dark:text-neutral-300 leading-relaxed transition">
-                                <Content />
+            moments.map((moment) => {
+                const { Content } = moment;
+                return (
+                    <article class="card-base p-4 md:p-5">
+                        <div class="flex items-start gap-3">
+                            <img
+                                src={profileConfig.avatar}
+                                alt=""
+                                loading="lazy"
+                                class="w-10 h-10 rounded-full shrink-0 object-cover"
+                            />
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap min-w-0">
+                                        <span class="font-bold text-[0.9375rem] text-neutral-900 dark:text-neutral-100 transition">
+                                            {profileConfig.name}
+                                        </span>
+                                        <time
+                                            class="text-xs text-neutral-400 tabular-nums transition"
+                                            datetime={moment.published.toISOString()}
+                                        >
+                                            {formatTime(moment.published)}
+                                        </time>
+                                        {moment.location && (
+                                            <span class="text-xs text-neutral-400 flex items-center gap-0.5 transition">
+                                                <Icon name="fa6-solid:location-dot" class="text-[0.7rem]"></Icon>
+                                                {moment.location}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        {moment.pinned && (
+                                            <span class="flex items-center gap-1 text-[0.6875rem] font-bold text-[var(--primary)] bg-[var(--btn-regular-bg)] px-1.5 py-0.5 rounded transition">
+                                                <Icon name="fa6-solid:thumbtack" class="text-[0.625rem]"></Icon>
+                                                置顶
+                                            </span>
+                                        )}
+                                        <Icon
+                                            name="fa6-solid:quote-right"
+                                            class="text-[var(--primary)] opacity-25 text-lg"
+                                        ></Icon>
+                                    </div>
+                                </div>
+                                <div class="custom-md mt-2 text-neutral-700 dark:text-neutral-300 leading-relaxed transition">
+                                    <Content />
+                                </div>
                             </div>
-                        </li>
-                    );
-                })
-            }
-        </ul>
+                        </div>
+                    </article>
+                );
+            })
+        }
     </div>
 </MainGridLayout>

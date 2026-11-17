@@ -25,6 +25,8 @@ const specCollection = defineCollection({
 const momentsCollection = defineCollection({
 	schema: z.object({
 		published: z.date(),
+		pinned: z.boolean().optional().default(false),
+		location: z.string().optional(),
 		draft: z.boolean().optional().default(false),
 	}),
 });
