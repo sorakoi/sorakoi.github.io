@@ -144,6 +144,10 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 	top: 5.5rem;
 }
 .enable-banner #main-panel {
+	top: calc(var(--banner-height) - 3.5rem);
+}
+/* Home shows a taller banner; the remaining 30vh comes from the translate on #main-grid. */
+[class~="lg:is-home"].enable-banner #main-panel {
 	top: calc(var(--banner-height-home-visible) - 3.5rem);
 }
 
