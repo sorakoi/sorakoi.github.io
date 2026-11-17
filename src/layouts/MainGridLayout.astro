@@ -9,12 +9,9 @@ import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import TOC from "../components/widget/TOC.astro";
 import { siteConfig } from "../config";
 import {
-	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
-	BANNER_HEIGHT_HOME_VISIBLE,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
-import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -49,15 +46,9 @@ const bannerVisiblePct = 100 / bannerImages.length;
 const bannerFadeInPct = (1.2 / bannerCycle) * 100;
 const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 
-// Home page uses a taller banner, inner pages keep the original height.
-const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
-const bannerVisibleHeight = isHomePage
-	? BANNER_HEIGHT_HOME_VISIBLE
-	: BANNER_HEIGHT;
-
-const mainPanelTop = siteConfig.banner.enable
-	? `calc(${bannerVisibleHeight}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
-	: "5.5rem";
+// The main panel's top offset lives in CSS (see the style block below) rather than
+// an inline style: Swup swaps the page content but keeps this wrapper element, so an
+// inline value would keep the previous page's header height after navigation.
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -97,7 +88,7 @@ const mainPanelTop = siteConfig.banner.enable
 </div>}
 
 <!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
+<div id="main-panel" class="absolute w-full z-30 pointer-events-none">
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto layout-width-transition">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
@@ -147,6 +138,20 @@ const mainPanelTop = siteConfig.banner.enable
 </div>
 
 <Fragment set:html={`<style>
+/* Top offset of the content panel. Kept in CSS so it follows Swup page changes;
+   the 3.5rem is MAIN_PANEL_OVERLAPS_BANNER_HEIGHT from constants.ts. */
+#main-panel {
+	top: 5.5rem;
+}
+.enable-banner #main-panel {
+	top: calc(var(--banner-height) - 3.5rem);
+}
+/* Home uses the visible height (not the full banner height): the remaining
+   30vh comes from the translate applied to #main-grid. */
+[class~="lg:is-home"].enable-banner #main-panel {
+	top: calc(var(--banner-height-home-visible) - 3.5rem);
+}
+
 .banner-slide {
 	position: absolute;
 	inset: 0;
