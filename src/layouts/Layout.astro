@@ -149,6 +149,17 @@ const bannerOffset =
 		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 
 
+		<style is:global>
+			/* 寒蝉全圆体 ChillRoundF — SIL OFL 授权，GB2312 一级字子集 */
+			@font-face {
+				font-family: "ChillRoundF";
+				src: url("/fonts/chillroundf.woff2") format("woff2");
+				font-weight: 400;
+				font-style: normal;
+				font-display: swap;
+			}
+		</style>
+
 		<slot name="head"></slot>
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
