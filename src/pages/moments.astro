@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from "astro:content";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+const entries = (
+	await getCollection("moments", ({ data }) => !data.draft)
+).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+
+const moments = await Promise.all(
+	entries.map(async (entry) => ({
+		id: entry.id,
+		published: entry.data.published,
+		Content: (await render(entry)).Content,
+	})),
+);
+
+const formatDate = (date: Date) =>
+	`${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`;
+---
+
+<MainGridLayout title="动态" description="零碎的事情，都记在这里">
+    <div class="card-base px-6 py-6 md:px-9 md:py-7 relative w-full">
+        <div class="flex items-baseline justify-between mb-6">
+            <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 transition">动态</h1>
+            <span class="text-sm text-neutral-400 transition">{moments.length} 条</span>
+        </div>
+
+        {
+            moments.length === 0 && (
+                <p class="text-neutral-400 py-8 text-center">还没有动态。</p>
+            )
+        }
+
+        <ul class="flex flex-col">
+            {
+                moments.map((moment) => {
+                    const { Content } = moment;
+                    return (
+                        <li class="group py-5 border-t border-dashed border-[var(--line-divider)] first:border-t-0 first:pt-0 transition">
+                            <time class="text-sm text-neutral-400 tabular-nums transition" datetime={moment.published.toISOString()}>
+                                {formatDate(moment.published)}
+                            </time>
+                            <div class="custom-md mt-2 text-neutral-700 dark:text-neutral-300 leading-relaxed transition">
+                                <Content />
+                            </div>
+                        </li>
+                    );
+                })
+            }
+        </ul>
+    </div>
+</MainGridLayout>

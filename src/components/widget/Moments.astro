@@ -1,0 +1,62 @@
+---
+import { getCollection, render } from "astro:content";
+import { url } from "../../utils/url-utils";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+const entries = (await getCollection("moments", ({ data }) => !data.draft))
+	.sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
+	.slice(0, 3);
+
+const moments = await Promise.all(
+	entries.map(async (entry) => ({
+		published: entry.data.published,
+		Content: (await render(entry)).Content,
+	})),
+);
+
+const shortDate = (date: Date) =>
+	`${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+---
+
+<WidgetLayout name="动态" id="moments" class={className} style={style}>
+    <ul class="flex flex-col gap-4 pb-1">
+        {
+            moments.map((moment) => {
+                const { Content } = moment;
+                return (
+                    <li class="flex flex-col gap-1">
+                        <time class="text-xs text-neutral-400 tabular-nums transition" datetime={moment.published.toISOString()}>
+                            {shortDate(moment.published)}
+                        </time>
+                        <div class="moment-text text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 transition">
+                            <Content />
+                        </div>
+                    </li>
+                );
+            })
+        }
+    </ul>
+    <a href={url("/moments/")}
+       class="group flex items-center justify-center gap-1 mt-1 py-1.5 rounded-lg text-sm text-neutral-400
+              hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition">
+        全部动态
+        <span class="transition group-hover:translate-x-0.5">→</span>
+    </a>
+</WidgetLayout>
+
+<style>
+    .moment-text :global(p) {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin: 0;
+    }
+</style>

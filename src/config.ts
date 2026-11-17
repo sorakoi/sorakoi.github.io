@@ -58,6 +58,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		{
+			name: "动态",
+			url: "/moments/", // Internal links should not include the base path, as it is automatically added
+			external: false,
+		},
+		{
 			name: "公告",
 			url: "./archive/?category=%E5%85%AC%E5%91%8A", // Internal links should not include the base path, as it is automatically added
 			external: false, // Show an external link icon and will open in a new tab
