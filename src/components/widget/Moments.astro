@@ -32,6 +32,11 @@ const shortDate = (date: Date) => {
 ---
 
 <WidgetLayout name="动态" id="moments" class={className} style={style}>
+    <a slot="header" href={url("/moments/")}
+       class="flex items-center gap-0.5 text-sm text-neutral-400 hover:text-[var(--primary)] transition shrink-0">
+        全部动态
+        <Icon name="material-symbols:chevron-right-rounded" class="text-[1.1rem]"></Icon>
+    </a>
     <ul class="flex flex-col gap-4 pb-1">
         {
             moments.map((moment) => {
@@ -49,14 +54,6 @@ const shortDate = (date: Date) => {
             })
         }
     </ul>
-    <div class="px-4">
-        <a href={url("/moments/")}
-           class="btn-plain rounded-lg w-full h-9 active:scale-95">
-            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
-                <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> 全部动态
-            </div>
-        </a>
-    </div>
 </WidgetLayout>
 
 <style>
