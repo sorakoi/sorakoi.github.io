@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
+import { Icon } from "astro-icon/components";
 import { url } from "../../utils/url-utils";
 import WidgetLayout from "./WidgetLayout.astro";
 
@@ -12,7 +13,7 @@ const style = Astro.props.style;
 
 const entries = (await getCollection("moments", ({ data }) => !data.draft))
 	.sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf())
-	.slice(0, 3);
+	.slice(0, 1);
 
 const moments = await Promise.all(
 	entries.map(async (entry) => ({
@@ -43,12 +44,14 @@ const shortDate = (date: Date) =>
             })
         }
     </ul>
-    <a href={url("/moments/")}
-       class="group flex items-center justify-center gap-1 mt-1 py-1.5 rounded-lg text-sm text-neutral-400
-              hover:text-[var(--primary)] hover:bg-[var(--btn-plain-bg-hover)] transition">
-        全部动态
-        <span class="transition group-hover:translate-x-0.5">→</span>
-    </a>
+    <div class="px-4">
+        <a href={url("/moments/")}
+           class="btn-plain rounded-lg w-full h-9 active:scale-95">
+            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+                <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> 全部动态
+            </div>
+        </a>
+    </div>
 </WidgetLayout>
 
 <style>
