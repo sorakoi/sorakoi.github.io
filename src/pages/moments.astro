@@ -31,9 +31,13 @@ const formatTime = (date: Date) => {
 ---
 
 <MainGridLayout title="动态" description="零碎的事情，都记在这里">
-    <div class="flex items-baseline justify-between mb-4 px-1">
+    <div class="card-base px-5 py-4 mb-3 flex items-center gap-3">
+        <Icon name="material-symbols:chat-bubble-outline" class="text-[1.5rem] text-[var(--primary)]"></Icon>
         <h1 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 transition">动态</h1>
-        <span class="text-sm text-neutral-400 transition">{moments.length} 条</span>
+        <span class="ml-auto flex items-center gap-1 text-sm text-neutral-400 transition">
+            <Icon name="material-symbols:format-list-bulleted" class="text-[1.1rem]"></Icon>
+            {moments.length} 条
+        </span>
     </div>
 
     <div class="flex flex-col gap-3">
@@ -41,7 +45,7 @@ const formatTime = (date: Date) => {
             moments.map((moment) => {
                 const { Content } = moment;
                 return (
-                    <article class="card-base p-4 md:p-5">
+                    <article class="card-base p-5 md:p-6 min-h-[8.75rem]">
                         <div class="flex items-start gap-3">
                             <img
                                 src={profileConfig.avatar}
@@ -55,12 +59,12 @@ const formatTime = (date: Date) => {
                                         <span class="font-bold text-[0.9375rem] text-neutral-900 dark:text-neutral-100 transition">
                                             {profileConfig.name}
                                         </span>
-                                        <time
-                                            class="text-xs text-neutral-400 tabular-nums transition"
-                                            datetime={moment.published.toISOString()}
-                                        >
-                                            {formatTime(moment.published)}
-                                        </time>
+                                        <span class="flex items-center gap-1 text-xs text-neutral-400 transition">
+                                            <Icon name="material-symbols:schedule" class="text-[0.85rem]"></Icon>
+                                            <time class="tabular-nums" datetime={moment.published.toISOString()}>
+                                                {formatTime(moment.published)}
+                                            </time>
+                                        </span>
                                         {moment.location && (
                                             <span class="text-xs text-neutral-400 flex items-center gap-0.5 transition">
                                                 <Icon name="fa6-solid:location-dot" class="text-[0.7rem]"></Icon>
@@ -81,7 +85,7 @@ const formatTime = (date: Date) => {
                                         ></Icon>
                                     </div>
                                 </div>
-                                <div class="custom-md mt-2 text-neutral-700 dark:text-neutral-300 leading-relaxed transition">
+                                <div class="custom-md mt-3 text-neutral-700 dark:text-neutral-300 leading-relaxed transition">
                                     <Content />
                                 </div>
                             </div>
