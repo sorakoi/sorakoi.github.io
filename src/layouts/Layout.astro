@@ -138,6 +138,11 @@ const bannerOffset =
 				document.documentElement.classList.add('wide-layout');
 			}
 
+			// Font mode: apply before paint to avoid a flash of the wrong font
+			if (localStorage.getItem('fontMode') === 'system') {
+				document.documentElement.classList.add('font-system');
+			}
+
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
@@ -219,6 +224,12 @@ const bannerOffset =
 	background-color: rgba(255, 255, 255, 0.8) !important;
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
+}
+
+/* Font mode: fall back to the plain system stack instead of the rounded face.
+   Only set on <html> so descendants with their own font (code blocks) still win. */
+:root.font-system {
+	font-family: "Roboto", "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif !important;
 }
 
 :root.wide-layout.dark #navbar .card-base:hover {
