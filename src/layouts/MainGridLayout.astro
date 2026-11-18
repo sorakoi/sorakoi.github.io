@@ -2,6 +2,7 @@
 import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
+import TocFab from "@components/TocFab.astro";
 import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
@@ -135,6 +136,10 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
         <!-- #toc needs to exist for Swup to work normally -->
         {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
+</div>
+
+<div id="floating-toc-slot">
+    <TocFab headings={headings} />
 </div>
 
 <Fragment set:html={`<style>

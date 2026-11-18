@@ -83,12 +83,6 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 
 		connectedCallback() {
 			const fab = this;
-			// 正文带 transform，浮层需要移到 body 才能相对视口定位。
-			// 移动会再次触发 connectedCallback，由重连的回调绑定监听。
-			if (fab.parentElement !== document.body) {
-				document.body.appendChild(fab);
-				return;
-			}
 			if (this.controller) return;
 			const btn = fab.querySelector<HTMLButtonElement>("#toc-fab-btn");
 			const close = fab.querySelector("#toc-fab-close");
@@ -96,7 +90,6 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 			const controller = new AbortController();
 			this.controller = controller;
 			const { signal } = controller;
-			document.addEventListener("astro:before-swap", () => fab.remove(), { signal });
 
 			const toggle = (open: boolean) => {
 				fab.classList.toggle("is-open", open);

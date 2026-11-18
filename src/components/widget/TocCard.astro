@@ -21,7 +21,7 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 <div id="toc-card-wrapper" class:list={[{ hidden: items.length === 0 }]}>
 	{
 		items.length > 0 && (
-			<WidgetLayout name="目录" id="toc-card" class={className} style={style}>
+			<WidgetLayout name="目录" id="toc-card" class={`block ${className ?? ""}`} style={style}>
 				<div class="px-1 pb-1 max-h-[45vh] overflow-y-auto">
 					<TOC headings={items} class="text-sm"></TOC>
 				</div>
