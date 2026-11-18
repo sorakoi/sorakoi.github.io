@@ -192,11 +192,6 @@ const siteLang = lang.replace("_", "-");
 	--page-width: min(1536px, max(75rem, 80vw)) !important;
 }
 
-/* Wide layout leaves almost no side room, so the TOC would be squeezed */
-:root.wide-layout #toc-wrapper {
-	display: none;
-}
-
 /* Center the desktop floating controls in one column beside the content. */
 body {
 	--floating-control-center: max(3.125rem, calc((100% - var(--page-width)) / 2 - 3.125rem));
@@ -247,11 +242,9 @@ body {
 		height: var(--scroll-banner-height, var(--route-banner-height));
 	}
 	.enable-banner #main-panel { margin-top: calc(-1 * var(--panel-overlap)); }
-	.enable-banner #top-row, .enable-banner #toc-rail {
+	.enable-banner #top-row {
 		height: calc(var(--scroll-banner-height, var(--route-banner-height)) - 4.5rem);
 	}
-	#toc-rail { top: 0; pointer-events: none; }
-	#toc-rail > div { top: 100%; pointer-events: auto; }
 	@media (prefers-reduced-motion: no-preference) {
 		html:not(.is-popstate) body:not(.article-scroll) #banner-wrapper { transition: height 350ms ease-in-out; }
 	}
@@ -521,7 +514,6 @@ if (window?.swup?.hooks) {
 }
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
-let toc = document.getElementById('toc-wrapper');
 let navbar = document.getElementById('navbar-wrapper')
 function scrollFunction() {
 	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
@@ -531,14 +523,6 @@ function scrollFunction() {
 			backToTopBtn.classList.remove('hide')
 		} else {
 			backToTopBtn.classList.add('hide')
-		}
-	}
-
-	if (bannerEnabled && toc) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			toc.classList.remove('toc-hide')
-		} else {
-			toc.classList.add('toc-hide')
 		}
 	}
 
