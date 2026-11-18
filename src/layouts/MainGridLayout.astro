@@ -57,7 +57,7 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 <!-- Banner (slideshow) -->
 {siteConfig.banner.enable && <div id="banner-wrapper" class="relative z-10 w-full overflow-hidden" style={`--banner-cycle: ${bannerCycle}s`}>
     {bannerImages.map((item, index) => (
-        <div class="banner-slide" style={`animation-delay: ${index * bannerInterval}s`}>
+        <div class="banner-slide" style={`animation-delay: ${index * bannerInterval - bannerCycle - 1.2}s`}>
             <ImageWrapper alt="Banner image of the blog" class:list={["w-full h-full"]}
                           src={item.src} position={siteConfig.banner.position}
             >
@@ -87,20 +87,20 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
         <div id="main-grid" class=" w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"
         >
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
+            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem]" headings={headings}></SideBar>
 
             <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
-                <div id="content-wrapper" class="onload-animation">
+                <div id="content-wrapper">
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->
                     <slot></slot>
-                    <div class="footer col-span-2 onload-animation hidden lg:block">
+                    <div class="footer col-span-2 hidden lg:block">
                         <Footer></Footer>
                     </div>
                 </div>
             </main>
 
-            <div class="footer col-span-2 onload-animation block lg:hidden">
+            <div class="footer col-span-2 block lg:hidden">
                 <Footer></Footer>
             </div>
         </div>
@@ -141,6 +141,7 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 	opacity: 0;
 	animation: bannerCycle var(--banner-cycle, 24s) infinite;
 }
+.banner-slide:only-child { animation: none; opacity: 1; }
 .banner-fade {
 	position: absolute;
 	left: 0;

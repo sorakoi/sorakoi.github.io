@@ -61,7 +61,7 @@
     }
 
     .toc-hide,
-    .toc-not-ready {
+    html.is-changing #toc-wrapper {
         @apply opacity-0 pointer-events-none
     }
 

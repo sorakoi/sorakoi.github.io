@@ -411,17 +411,13 @@ function init() {
 init();
 
 const setup = () => {
-	window.swup.hooks.on('link:click', () => {
-		// Remove the delay for the first time page load
-		document.documentElement.style.setProperty('--content-delay', '0ms')
-
-	})
 	let finishArticleScroll: (() => void) | undefined;
 	let enteringArticle = false;
 	window.swup.hooks.on('visit:start', (visit: {
-		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean},
+		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean, animate: boolean},
 		animation: {animate: boolean}
 	}) => {
+		document.documentElement.dataset.navigated = "";
 		finishArticleScroll?.();
 		// Preserve the current scroll range when replacing a long list with a short post.
 		document.body.style.minHeight = `${window.scrollY + window.innerHeight}px`;
@@ -429,7 +425,10 @@ const setup = () => {
 			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
 			&& visit.scroll.reset && !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
 		if (enteringArticle) visit.animation.animate = false;
-		document.getElementById('toc-wrapper')?.classList.add('toc-not-ready');
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			visit.animation.animate = false;
+			visit.scroll.animate = false;
+		}
 	});
 	window.swup.hooks.on('content:replace', (visit: {
 		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean}
@@ -441,7 +440,6 @@ const setup = () => {
 		body.classList.toggle('home-page', pathsEqual(visit.to.url, url('/')));
 		if (enteringArticle && banner && startY > 0) {
 			body.classList.add('article-scroll');
-			document.querySelector('main')?.setAttribute('data-scroll-entry', '');
 			const endHeight = banner.offsetHeight;
 			visit.scroll.reset = false;
 			const sync = () => {
@@ -467,7 +465,6 @@ const setup = () => {
 	})
 	window.swup.hooks.on('visit:end', () => {
 		if (!finishArticleScroll) document.body.style.removeProperty('min-height');
-		document.getElementById('toc-wrapper')?.classList.remove('toc-not-ready');
 		scrollFunction();
 	});
 }

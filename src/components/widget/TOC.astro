@@ -72,8 +72,7 @@ class TableOfContents extends HTMLElement {
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
     initialized = false;
-    initTimer: ReturnType<typeof setTimeout> | null = null;
-    animationElement: Element | null = null;
+    initFrame = 0;
 
     constructor() {
         super();
@@ -168,6 +167,7 @@ class TableOfContents extends HTMLElement {
         if (!this.sections.length) return;
 
         for (let i = 0; i < this.sections.length; i++) {
+            if (!this.sections[i]) continue;
             let offsetTop = this.sections[i].getBoundingClientRect().top;
             let offsetBottom = this.sections[i].getBoundingClientRect().bottom;
 
@@ -204,30 +204,10 @@ class TableOfContents extends HTMLElement {
         return min < value && value < max;
     };
 
-    cancelPendingInit = () => {
-        if (this.initTimer !== null) clearTimeout(this.initTimer);
-        this.initTimer = null;
-        this.animationElement?.removeEventListener('animationend', this.initialize);
-        this.animationElement = null;
-    };
-
-    initialize = () => {
-        if (!this.isConnected || this.initialized) return;
-        this.cancelPendingInit();
-        this.init();
-    };
-
     connectedCallback() {
-        // 等入场动画结束后再初始化，这样 getBoundingClientRect 才是准确值。
-        // 但元素被移动过（浮层会挂到 body）时会重新连接，此时动画早已播完，
-        // animationend 不会再触发，所以额外加一个兜底定时器。
-        const element = document.querySelector('.prose');
-        if (!element) return;
-
-        this.animationElement = element;
-        element.addEventListener('animationend', this.initialize, { once: true });
-        this.initTimer = setTimeout(this.initialize, 1000);
-    };
+        // Swup replaces the article and its TOCs in the same DOM update.
+        this.initFrame = requestAnimationFrame(() => this.init());
+    }
 
     init() {
         this.initialized = true;
@@ -270,7 +250,7 @@ class TableOfContents extends HTMLElement {
     };
 
     disconnectedCallback() {
-        this.cancelPendingInit();
+        cancelAnimationFrame(this.initFrame);
         this.observer.disconnect();
         this.tocEl?.removeEventListener("click", this.handleAnchorClick, true);
         // 浮层移动到 body 时会断开再连接，重连后需要重新绑定正文并恢复观察。
