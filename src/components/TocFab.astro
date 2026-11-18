@@ -1,0 +1,129 @@
+---
+import { Icon } from "astro-icon/components";
+import type { MarkdownHeading } from "astro";
+import TOC from "./widget/TOC.astro";
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+const { headings = [] } = Astro.props;
+// 收录一级到三级标题：不少文章直接用 ### 写小标题，只留 h1/h2 会导致索引为空
+const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
+---
+
+{
+	items.length > 0 && (
+		<aside class="toc-fab" data-toc-fab>
+			<button
+				type="button"
+				id="toc-fab-btn"
+				aria-label="打开文章目录"
+				aria-expanded="false"
+				class="btn-regular rounded-full h-11 w-11 flex items-center justify-center shadow-lg active:scale-90 transition"
+			>
+				<Icon name="material-symbols:list-rounded" class="text-[1.35rem]"></Icon>
+			</button>
+
+			<div id="toc-fab-panel" class="toc-fab-panel card-base">
+				<div class="flex items-center justify-between px-3 pt-3 pb-1">
+					<span class="text-sm font-bold text-neutral-900 dark:text-neutral-100 transition">目录</span>
+					<button
+						type="button"
+						id="toc-fab-close"
+						aria-label="关闭目录"
+						class="btn-plain rounded-lg h-7 w-7 flex items-center justify-center active:scale-90"
+					>
+						<Icon name="material-symbols:close-rounded" class="text-[1.1rem]"></Icon>
+					</button>
+				</div>
+				<div class="px-1 pb-3 max-h-[60vh] overflow-y-auto">
+					<TOC headings={items} class="text-sm"></TOC>
+				</div>
+			</div>
+		</aside>
+	)
+}
+
+<style>
+	.toc-fab {
+		position: fixed;
+		left: 1.25rem;
+		bottom: 1.5rem;
+		z-index: 45;
+	}
+
+	.toc-fab-panel {
+		position: absolute;
+		left: 0;
+		bottom: calc(100% + 0.6rem);
+		width: 17rem;
+		box-shadow:
+			0 12px 32px rgba(0, 0, 0, 0.14),
+			0 2px 8px rgba(0, 0, 0, 0.08);
+		opacity: 0;
+		transform: translateY(0.5rem) scale(0.97);
+		transform-origin: bottom left;
+		pointer-events: none;
+		transition:
+			opacity 180ms ease,
+			transform 180ms ease;
+	}
+
+	.toc-fab.is-open .toc-fab-panel {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		pointer-events: auto;
+	}
+
+	/* 文章本就自带右侧目录时，这个浮动入口只在小屏出现 */
+	@media (min-width: 1280px) {
+		.toc-fab {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	function setup() {
+		const fab = document.querySelector("[data-toc-fab]");
+		const btn = document.getElementById("toc-fab-btn");
+		const close = document.getElementById("toc-fab-close");
+		if (!fab || !btn) return;
+
+		// 文章容器带 transform，会让 position:fixed 相对它而非视口定位，
+		// 因此把浮层挂到 body 下；scoped 样式靠属性选择器仍然生效。
+		if (fab.parentElement !== document.body) {
+			document.body.appendChild(fab);
+		}
+
+		const toggle = (open: boolean) => {
+			fab.classList.toggle("is-open", open);
+			btn.setAttribute("aria-expanded", String(open));
+		};
+
+		btn.addEventListener("click", () => {
+			toggle(!fab.classList.contains("is-open"));
+		});
+
+		close?.addEventListener("click", () => toggle(false));
+
+		document.addEventListener("click", (e) => {
+			if (!fab.classList.contains("is-open")) return;
+			const t = e.target;
+			if (t instanceof Node && !fab.contains(t)) toggle(false);
+		});
+
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") toggle(false);
+		});
+
+		// 点击目录项后收起
+		fab.querySelectorAll("table-of-contents a").forEach((a) => {
+			a.addEventListener("click", () => toggle(false));
+		});
+	}
+
+	setup();
+	document.addEventListener("swup:page:view", setup);
+</script>

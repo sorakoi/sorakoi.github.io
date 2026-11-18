@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
-import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
+import { getAuthorUrl, getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
 interface Props {
 	class: string;
@@ -44,7 +44,11 @@ const className = Astro.props.class;
             >
                 <Icon name="material-symbols:person-outline-rounded" class="text-xl"></Icon>
             </div>
-            <span class="text-50 text-sm font-medium whitespace-nowrap">{author}</span>
+            <a href={getAuthorUrl(author)} aria-label={`View all posts by ${author}`}
+               class="link-lg transition text-50 text-sm font-medium whitespace-nowrap
+                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)]">
+                {author}
+            </a>
         </div>
     )}
 
