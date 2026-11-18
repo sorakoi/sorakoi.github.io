@@ -26,7 +26,8 @@ export function getAuthorUrl(author: string): string {
 	return url(`/archive/?author=${encodeURIComponent(author.trim())}`);
 }
 
-export function getCategoryUrl(category: string | null): string {	if (
+export function getCategoryUrl(category: string | null): string {
+	if (
 		!category ||
 		category.trim() === "" ||
 		category.trim().toLowerCase() === i18n(I18nKey.uncategorized).toLowerCase()
