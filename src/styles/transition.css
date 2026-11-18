@@ -6,26 +6,6 @@ html.is-animating .transition-swup-fade {
     @apply opacity-0 translate-y-4
 }
 
-/* Let the old list fade away before resetting a deeply scrolled viewport. */
-.from-scrolled-home.is-changing .transition-swup-fade {
-    transition: opacity 440ms ease-out;
-    transform: none;
-}
-.from-scrolled-home.is-leaving .transition-swup-fade {
-    transition-duration: 320ms;
-}
-.from-scrolled-home.is-changing :is(#banner-wrapper, #main-panel) {
-    transition: opacity 320ms ease-in-out;
-}
-.from-scrolled-home.is-animating :is(#banner-wrapper, #main-panel) {
-    opacity: 0;
-}
-@media (prefers-reduced-motion: reduce) {
-    .from-scrolled-home.is-changing :is(.transition-swup-fade, #banner-wrapper, #main-panel) {
-        transition-duration: 0ms;
-    }
-}
-
 /* Collapse both the card and its flex gap before Swup replaces it. */
 .transition-swup-toc {
     display: grid;

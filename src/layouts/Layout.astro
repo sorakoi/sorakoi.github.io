@@ -479,15 +479,7 @@ const setup = () => {
         document.body.classList.toggle('lg:is-home', pathsEqual(visit.to.url, url('/')));
         initCustomScrollbar();
     })
-	window.swup.hooks.on('visit:start', (visit: {
-		from: { url: string }, to: { url: string }, history: { popstate: boolean }, scroll: { animate: boolean }
-	}) => {
-		const fromList = pathsEqual(new URL(visit.from.url, location.href).pathname, url('/'));
-		const intoPost = new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'));
-		const fromScrolledHome = !visit.history.popstate && fromList && intoPost && window.scrollY > 80;
-		document.documentElement.classList.toggle('from-scrolled-home', fromScrolledHome);
-		// Reset the viewport between fades so a long list doesn't fly past the reader.
-		if (fromScrolledHome) visit.scroll.animate = false;
+	window.swup.hooks.on('visit:start', () => {
 		// increase the page height during page transition to prevent the scrolling animation from jumping
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {
@@ -508,7 +500,6 @@ const setup = () => {
 		}
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
-		document.documentElement.classList.remove('from-scrolled-home');
 		setTimeout(() => {
 			const heightExtend = document.getElementById('page-height-extend')
 			if (heightExtend) {
