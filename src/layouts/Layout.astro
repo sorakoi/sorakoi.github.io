@@ -435,12 +435,12 @@ const setup = () => {
 	})
 	let finishArticleScroll: (() => void) | undefined;
 	window.swup.hooks.on('content:replace', (visit: {
-		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string}
+		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean}
 	}) => {
 		const banner = document.getElementById('banner-wrapper');
 		const body = document.body;
 		const startY = window.scrollY;
-		const trackScroll = banner && startY > 0 && body.classList.contains('home-page')
+		const trackScroll = banner && visit.scroll.reset && startY > 0 && body.classList.contains('home-page')
 			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
 			&& !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
 		const startHeight = banner?.offsetHeight ?? 0;
@@ -449,20 +449,42 @@ const setup = () => {
 			body.classList.add('article-scroll');
 			document.querySelector('main')?.setAttribute('data-scroll-entry', '');
 			const endHeight = banner.offsetHeight;
-			const sync = () => {
-				const progress = Math.min(1, Math.max(0, window.scrollY / startY));
-				const height = endHeight + (startHeight - endHeight) * progress;
-				body.style.setProperty('--scroll-banner-height', `${height}px`);
-				if (progress === 0) finishArticleScroll?.();
-			};
+			visit.scroll.reset = false;
+			const inputs = new AbortController();
+			const { signal } = inputs;
+			let frame = 0;
 			finishArticleScroll = () => {
-				window.removeEventListener('scroll', sync);
-				body.style.removeProperty('--scroll-banner-height');
+				cancelAnimationFrame(frame);
+				inputs.abort();
 				body.classList.remove('article-scroll');
+				body.style.removeProperty('--scroll-banner-height');
+				document.getElementById('page-height-extend')?.classList.add('hidden');
 				finishArticleScroll = undefined;
 			};
-			sync();
-			window.addEventListener('scroll', sync, { passive: true });
+			const cancel = () => finishArticleScroll?.();
+			for (const event of ['wheel', 'touchstart', 'pointerdown']) {
+				window.addEventListener(event, cancel, { passive: true, signal });
+			}
+			window.addEventListener('keydown', (event) => {
+				if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) cancel();
+			}, { signal });
+
+			// Smoothstep's maximum slope is 1.5. Scale duration with distance to
+			// limit peak speed to 3000 CSS pixels/second, independent of frame rate.
+			const duration = Math.max(360, 1.5 * startY / 3);
+			const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			const started = performance.now();
+			body.style.setProperty('--scroll-banner-height', `${startHeight}px`);
+			const step = (now: number) => {
+				const t = reducedMotion ? 1 : Math.min(1, Math.max(0, (now - started) / duration));
+				const remaining = 1 - t * t * (3 - 2 * t);
+				window.scrollTo({ top: startY * remaining, behavior: 'instant' });
+				const height = endHeight + (startHeight - endHeight) * (window.scrollY / startY);
+				body.style.setProperty('--scroll-banner-height', `${height}px`);
+				if (t === 1) cancel();
+				else frame = requestAnimationFrame(step);
+			};
+			frame = requestAnimationFrame(step);
 		}
 		initCustomScrollbar();
 	})
@@ -490,7 +512,7 @@ const setup = () => {
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {
 			const heightExtend = document.getElementById('page-height-extend')
-			if (heightExtend) {
+			if (heightExtend && !finishArticleScroll) {
 				heightExtend.classList.add('hidden')
 			}
 
