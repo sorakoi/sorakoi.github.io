@@ -475,11 +475,42 @@ const setup = () => {
 			navbar.classList.add('navbar-hidden')
 		}
 	})
-	window.swup.hooks.on('content:replace', (visit: {to: {url: string}}) => {
-        document.body.classList.toggle('lg:is-home', pathsEqual(visit.to.url, url('/')));
-        initCustomScrollbar();
-    })
+	let finishArticleScroll: (() => void) | undefined;
+	window.swup.hooks.on('content:replace', (visit: {
+		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string}
+	}) => {
+		const grid = document.getElementById('main-grid');
+		const body = document.body;
+		const startY = window.scrollY;
+		const trackScroll = grid && startY > 0 && body.classList.contains('lg:is-home')
+			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
+			&& !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
+		const startTop = grid?.getBoundingClientRect().top ?? 0;
+		body.classList.toggle('lg:is-home', pathsEqual(visit.to.url, url('/')));
+		if (trackScroll) {
+			body.classList.add('article-scroll');
+			document.querySelector('main')?.setAttribute('data-scroll-entry', '');
+			// Interpolate the layout offset with the scroll position itself. Independent
+			// transitions on top and transform can outlast the scroll and reverse direction.
+			const offset = startTop - grid.getBoundingClientRect().top;
+			const sync = () => {
+				const progress = Math.min(1, Math.max(0, window.scrollY / startY));
+				grid.style.translate = `0 ${offset * progress}px`;
+				if (progress === 0) finishArticleScroll?.();
+			};
+			finishArticleScroll = () => {
+				window.removeEventListener('scroll', sync);
+				grid.style.removeProperty('translate');
+				body.classList.remove('article-scroll');
+				finishArticleScroll = undefined;
+			};
+			sync();
+			window.addEventListener('scroll', sync, { passive: true });
+		}
+		initCustomScrollbar();
+	})
 	window.swup.hooks.on('visit:start', () => {
+		finishArticleScroll?.();
 		// increase the page height during page transition to prevent the scrolling animation from jumping
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {

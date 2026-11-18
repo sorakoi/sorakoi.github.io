@@ -6,6 +6,21 @@ html.is-animating .transition-swup-fade {
     @apply opacity-0 translate-y-4
 }
 
+/* The main grid follows the viewport during a scroll from the home feed. */
+.article-scroll #main-panel,
+.article-scroll #main-grid {
+    transition: none;
+    overflow-anchor: none;
+}
+html.is-changing main[data-scroll-entry].transition-swup-fade {
+    transition-property: opacity;
+    transform: none;
+}
+main[data-scroll-entry] .onload-animation {
+    animation: none;
+    opacity: 1;
+}
+
 /* Collapse both the card and its flex gap before Swup replaces it. */
 .transition-swup-toc {
     display: grid;
