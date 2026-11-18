@@ -82,8 +82,8 @@ export const profileConfig: ProfileConfig = {
 	bio: "从晴朗的朝色泛起之际开始",
 	links: [
 		{
-			name: "Twitter",
-			icon: "fa6-regular:snowflake", // Visit https://icones.js.org/ for icon codes
+			name: "花宫学园",
+			icon: "fa6-solid:school", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
 			url: "https://tianshi.me",
