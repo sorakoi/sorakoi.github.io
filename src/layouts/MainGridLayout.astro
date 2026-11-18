@@ -148,6 +148,9 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 #main-panel {
 	top: 5.5rem;
 }
+@media (prefers-reduced-motion: no-preference) {
+    #main-panel { transition: top 350ms ease-in-out; }
+}
 .enable-banner #main-panel {
 	top: calc(var(--banner-height) - 3.5rem);
 }
