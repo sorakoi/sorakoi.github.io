@@ -9,10 +9,6 @@ import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import TOC from "../components/widget/TOC.astro";
 import { siteConfig } from "../config";
-import {
-	BANNER_HEIGHT_EXTEND,
-	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
-} from "../constants/constants";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -46,27 +42,23 @@ const bannerCycle = bannerImages.length * bannerInterval;
 const bannerVisiblePct = 100 / bannerImages.length;
 const bannerFadeInPct = (1.2 / bannerCycle) * 100;
 const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
-
-// The main panel's top offset lives in CSS (see the style block below) rather than
-// an inline style: Swup swaps the page content but keeps this wrapper element, so an
-// inline value would keep the previous page's header height after navigation.
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
+<div id="top-row" class="z-50 pointer-events-none absolute inset-x-0 top-0 layout-width-transition max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
     <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
         <Navbar></Navbar>
     </div>
 </div>
 
 <!-- Banner (slideshow) -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh; --banner-cycle: ${bannerCycle}s`}>
+{siteConfig.banner.enable && <div id="banner-wrapper" class="relative z-10 w-full overflow-hidden" style={`--banner-cycle: ${bannerCycle}s`}>
     {bannerImages.map((item, index) => (
         <div class="banner-slide" style={`animation-delay: ${index * bannerInterval}s`}>
-            <ImageWrapper id={index === 0 ? "banner" : undefined} alt="Banner image of the blog" class:list={["w-full h-full"]}
+            <ImageWrapper alt="Banner image of the blog" class:list={["w-full h-full"]}
                           src={item.src} position={siteConfig.banner.position}
             >
             </ImageWrapper>
@@ -89,10 +81,10 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 </div>}
 
 <!-- Main content -->
-<div id="main-panel" class="absolute w-full z-30 pointer-events-none">
+<div id="main-panel" class="relative w-full z-30 pointer-events-none">
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto layout-width-transition">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
+        <div id="main-grid" class=" w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"
         >
             <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
@@ -118,7 +110,7 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 </div>
 
 <!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
+<div id="toc-rail" class="absolute w-full z-0 hidden 2xl:block">
     <div class="relative max-w-[var(--page-width)] mx-auto layout-width-transition">
         <!-- TOC component -->
         {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
@@ -143,22 +135,6 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 </div>
 
 <Fragment set:html={`<style>
-/* Top offset of the content panel. Kept in CSS so it follows Swup page changes;
-   the 3.5rem is MAIN_PANEL_OVERLAPS_BANNER_HEIGHT from constants.ts. */
-#main-panel {
-	top: 5.5rem;
-}
-@media (prefers-reduced-motion: no-preference) {
-    #main-panel { transition: top 350ms ease-in-out; }
-}
-.enable-banner #main-panel {
-	top: calc(var(--banner-height) - 3.5rem);
-}
-/* Home shows a taller banner; the remaining 30vh comes from the translate on #main-grid. */
-[class~="lg:is-home"].enable-banner #main-panel {
-	top: calc(var(--banner-height-home-visible) - 3.5rem);
-}
-
 .banner-slide {
 	position: absolute;
 	inset: 0;
