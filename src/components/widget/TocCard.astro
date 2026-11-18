@@ -14,11 +14,18 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
 {
-	items.length > 0 && (
-		<WidgetLayout name="目录" id="toc-card" class={className} style={style}>
-			<div class="px-1 pb-1 max-h-[45vh] overflow-y-auto">
-				<TOC headings={items} class="text-sm"></TOC>
-			</div>
-		</WidgetLayout>
-	)
+	// 侧栏不在 Swup 默认替换的 main 容器内，这里单独包一层并加入 swup 的
+	// containers，才能在页面切换时随文章一起更新。没有标题时显式隐藏，
+	// 避免在侧栏里留下多余的间隙。
 }
+<div id="toc-card-wrapper" class:list={[{ hidden: items.length === 0 }]}>
+	{
+		items.length > 0 && (
+			<WidgetLayout name="目录" id="toc-card" class={className} style={style}>
+				<div class="px-1 pb-1 max-h-[45vh] overflow-y-auto">
+					<TOC headings={items} class="text-sm"></TOC>
+				</div>
+			</WidgetLayout>
+		)
+	}
+</div>

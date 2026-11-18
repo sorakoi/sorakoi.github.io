@@ -71,6 +71,9 @@ class TableOfContents extends HTMLElement {
     tocEntries: HTMLAnchorElement[] = [];
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
+    initialized = false;
+    initTimer: ReturnType<typeof setTimeout> | null = null;
+    animationElement: Element | null = null;
 
     constructor() {
         super();
@@ -153,6 +156,7 @@ class TableOfContents extends HTMLElement {
 
     update = () => {
         requestAnimationFrame(() => {
+            if (!this.isConnected || !this.initialized) return;
             this.toggleActiveHeading();
             // requestAnimationFrame(() => {
             this.scrollToActiveHeading();
@@ -200,6 +204,19 @@ class TableOfContents extends HTMLElement {
         return min < value && value < max;
     };
 
+    cancelPendingInit = () => {
+        if (this.initTimer !== null) clearTimeout(this.initTimer);
+        this.initTimer = null;
+        this.animationElement?.removeEventListener('animationend', this.initialize);
+        this.animationElement = null;
+    };
+
+    initialize = () => {
+        if (!this.isConnected || this.initialized) return;
+        this.cancelPendingInit();
+        this.init();
+    };
+
     connectedCallback() {
         // 等入场动画结束后再初始化，这样 getBoundingClientRect 才是准确值。
         // 但元素被移动过（浮层会挂到 body）时会重新连接，此时动画早已播完，
@@ -207,16 +224,13 @@ class TableOfContents extends HTMLElement {
         const element = document.querySelector('.prose');
         if (!element) return;
 
-        const run = () => {
-            if (this.tocEntries) return;
-            this.init();
-        };
-
-        element.addEventListener('animationend', run, { once: true });
-        setTimeout(run, 1000);
+        this.animationElement = element;
+        element.addEventListener('animationend', this.initialize, { once: true });
+        this.initTimer = setTimeout(this.initialize, 1000);
     };
 
     init() {
+        this.initialized = true;
         // 页面上可能有多个目录实例（右侧栏、侧栏卡片、浮层面板），
         // 每个实例只能接管自己内部的链接，不能用全局选择器。
         this.tocEl = this;
@@ -256,11 +270,19 @@ class TableOfContents extends HTMLElement {
     };
 
     disconnectedCallback() {
-        this.sections.forEach((section) =>
-            this.observer.unobserve(section)
-        );
+        this.cancelPendingInit();
         this.observer.disconnect();
-        this.tocEl?.removeEventListener("click", this.handleAnchorClick);
+        this.tocEl?.removeEventListener("click", this.handleAnchorClick, true);
+        // 浮层移动到 body 时会断开再连接，重连后需要重新绑定正文并恢复观察。
+        this.initialized = false;
+        this.headingIdxMap.clear();
+        this.headings = [];
+        this.sections = [];
+        this.tocEntries = [];
+        this.active = [];
+        this.anchorNavTarget = null;
+        this.activeIndicator = null;
+        this.tocEl = null;
     };
 }
 

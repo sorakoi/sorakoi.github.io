@@ -14,7 +14,7 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 
 {
 	items.length > 0 && (
-		<aside class="toc-fab" data-toc-fab>
+		<floating-toc class="toc-fab" data-toc-fab role="complementary" aria-label="文章目录">
 			<button
 				type="button"
 				id="toc-fab-btn"
@@ -41,7 +41,7 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					<TOC headings={items} class="text-sm"></TOC>
 				</div>
 			</div>
-		</aside>
+		</floating-toc>
 	)
 }
 
@@ -78,45 +78,60 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 </style>
 
 <script>
-	function setup() {
-		const fab = document.querySelector("[data-toc-fab]");
-		const btn = document.getElementById("toc-fab-btn");
-		const close = document.getElementById("toc-fab-close");
-		if (!fab || !btn) return;
+	class FloatingTOC extends HTMLElement {
+		controller: AbortController | null = null;
 
-		// 文章容器带 transform，会让 position:fixed 相对它而非视口定位，
-		// 因此把浮层挂到 body 下；scoped 样式靠属性选择器仍然生效。
-		if (fab.parentElement !== document.body) {
-			document.body.appendChild(fab);
+		connectedCallback() {
+			const fab = this;
+			// 正文带 transform，浮层需要移到 body 才能相对视口定位。
+			// 移动会再次触发 connectedCallback，由重连的回调绑定监听。
+			if (fab.parentElement !== document.body) {
+				document.body.appendChild(fab);
+				return;
+			}
+			if (this.controller) return;
+			const btn = fab.querySelector<HTMLButtonElement>("#toc-fab-btn");
+			const close = fab.querySelector("#toc-fab-close");
+			if (!btn) return;
+			const controller = new AbortController();
+			this.controller = controller;
+			const { signal } = controller;
+			document.addEventListener("astro:before-swap", () => fab.remove(), { signal });
+
+			const toggle = (open: boolean) => {
+				fab.classList.toggle("is-open", open);
+				btn.setAttribute("aria-expanded", String(open));
+			};
+
+			btn.addEventListener("click", () => {
+				toggle(!fab.classList.contains("is-open"));
+			}, { signal });
+
+			close?.addEventListener("click", () => toggle(false), { signal });
+
+			document.addEventListener("click", (e) => {
+				if (!fab.classList.contains("is-open")) return;
+				const t = e.target;
+				if (t instanceof Node && !fab.contains(t)) toggle(false);
+			}, { signal });
+
+			document.addEventListener("keydown", (e) => {
+				if (e.key === "Escape") toggle(false);
+			}, { signal });
+
+			// 点击目录项后收起
+			fab.querySelectorAll("table-of-contents a").forEach((a) => {
+				a.addEventListener("click", () => toggle(false), { signal });
+			});
 		}
 
-		const toggle = (open: boolean) => {
-			fab.classList.toggle("is-open", open);
-			btn.setAttribute("aria-expanded", String(open));
-		};
-
-		btn.addEventListener("click", () => {
-			toggle(!fab.classList.contains("is-open"));
-		});
-
-		close?.addEventListener("click", () => toggle(false));
-
-		document.addEventListener("click", (e) => {
-			if (!fab.classList.contains("is-open")) return;
-			const t = e.target;
-			if (t instanceof Node && !fab.contains(t)) toggle(false);
-		});
-
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") toggle(false);
-		});
-
-		// 点击目录项后收起
-		fab.querySelectorAll("table-of-contents a").forEach((a) => {
-			a.addEventListener("click", () => toggle(false));
-		});
+		disconnectedCallback() {
+			this.controller?.abort();
+			this.controller = null;
+		}
 	}
 
-	setup();
-	document.addEventListener("swup:page:view", setup);
+	if (!customElements.get("floating-toc")) {
+		customElements.define("floating-toc", FloatingTOC);
+	}
 </script>
