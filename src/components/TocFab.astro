@@ -20,9 +20,9 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				id="toc-fab-btn"
 				aria-label="打开文章目录"
 				aria-expanded="false"
-				class="btn-regular rounded-full h-11 w-11 flex items-center justify-center shadow-lg active:scale-90 transition"
+				class="floating-control"
 			>
-				<Icon name="material-symbols:list-rounded" class="text-[1.35rem]"></Icon>
+				<Icon name="material-symbols:list-rounded" class="text-[2rem]"></Icon>
 			</button>
 
 			<div id="toc-fab-panel" class="toc-fab-panel card-base">
@@ -72,7 +72,7 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 
 	@media (min-width: 1024px) {
 		.toc-fab {
-			right: calc(var(--floating-control-center) - 1.375rem);
+			right: calc(var(--floating-control-center) - 1.875rem);
 		}
 	}
 

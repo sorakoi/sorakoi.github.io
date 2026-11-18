@@ -34,6 +34,13 @@
         @apply transition flex items-center justify-center bg-[var(--card-bg)] hover:bg-[var(--btn-card-bg-hover)]
         active:bg-[var(--btn-card-bg-active)]
     }
+    .floating-control {
+        @apply btn-card h-[3.75rem] w-[3.75rem] rounded-2xl text-[var(--primary)] active:scale-90;
+    }
+    .floating-control:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 3px;
+    }
     .btn-card.disabled {
         @apply pointer-events-none text-black/10 dark:text-white/10
     }
