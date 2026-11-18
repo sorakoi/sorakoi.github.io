@@ -83,7 +83,7 @@ export const profileConfig: ProfileConfig = {
 	links: [
 		{
 			name: "花宫学园",
-			icon: "material-symbols:local-florist", // Visit https://icones.js.org/ for icon codes
+			icon: "material-symbols:filter-vintage", // Visit https://icones.js.org/ for icon codes
 			// You will need to install the corresponding icon set if it's not already included
 			// `pnpm add @iconify-json/<icon-set-name>`
 			url: "https://tianshi.me",
