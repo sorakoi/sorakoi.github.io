@@ -199,15 +199,15 @@ if (document.readyState === 'loading') {
 <style>
 /* 导航栏透明毛玻璃效果 */
 #navbar .card-base {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.53) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  backdrop-filter: blur(18px) saturate(135%);
   border: 0px solid rgba(255, 255, 255, 0.3);
 }
 
 /* 深色模式 */
 :global(.dark) #navbar .card-base {
-  background: rgba(0, 0, 0, 0.7) !important;
+  background: rgba(0, 0, 0, 0.52) !important;
   border: 0px solid rgba(255, 255, 255, 0.1);
 }
 

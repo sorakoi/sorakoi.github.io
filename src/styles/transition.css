@@ -25,6 +25,10 @@ html.is-animating .transition-swup-toc {
     html:not([data-navigated]) :is(#navbar, #sidebar, #content-wrapper) {
         animation: page-entry 280ms ease-out both;
     }
+    /* Release the opacity animation so the navbar can sample the banner behind it. */
+    html:not([data-navigated]) #navbar {
+        animation-fill-mode: backwards;
+    }
 }
 @keyframes page-entry {
     from { opacity: 0; transform: translateY(0.75rem); }
