@@ -94,7 +94,7 @@ function applyWideMode(wide: boolean) {
 }
 
 function toggleWideMode() {
-    applyWideMode(localStorage.getItem("wideMode") !== "true");
+    applyWideMode(!document.documentElement.classList.contains("wide-layout"));
 }
 
 function updateFontBtn(system: boolean) {
@@ -143,7 +143,7 @@ function loadButtonScript() {
         wideBtn.onclick = function () {
             toggleWideMode();
         };
-        updateWideBtn(localStorage.getItem("wideMode") === "true");
+        updateWideBtn(document.documentElement.classList.contains("wide-layout"));
     }
 
     let fontBtn = document.getElementById("font-mode-switch");

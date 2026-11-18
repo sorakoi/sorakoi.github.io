@@ -135,9 +135,7 @@ const siteLang = lang.replace("_", "-");
 			document.documentElement.style.setProperty('--hue', hue);
 
 			// Restore the wide layout preference before first paint
-			if (localStorage.getItem('wideMode') === 'true') {
-				document.documentElement.classList.add('wide-layout');
-			}
+			document.documentElement.classList.toggle('wide-layout', localStorage.getItem('wideMode') !== 'false');
 
 			// Font mode: apply before paint to avoid a flash of the wrong font
 			if (localStorage.getItem('fontMode') === 'system') {
