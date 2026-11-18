@@ -55,7 +55,7 @@ const maxLevel = siteConfig.toc.depth;
                 }]}>{removeTailingHash(heading.text)}</div>
             </a>
     )}
-    <div id="active-indicator" style="opacity: 0" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
+    <div style="opacity: 0" class:list={["active-indicator", {'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
         "group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"]}></div>
 </table-of-contents>}
 
@@ -130,7 +130,7 @@ class TableOfContents extends HTMLElement {
 
         if (this.anchorNavTarget || !this.tocEl) return;
         const activeHeading =
-            document.querySelectorAll<HTMLDivElement>(`#toc .${this.visibleClass}`);
+            this.querySelectorAll<HTMLDivElement>(`.${this.visibleClass}`);
         if (!activeHeading.length) return;
 
         const topmost = activeHeading[0];
@@ -201,32 +201,34 @@ class TableOfContents extends HTMLElement {
     };
 
     connectedCallback() {
-        // wait for the onload animation to finish, which makes the `getBoundingClientRect` return correct values
+        // 等入场动画结束后再初始化，这样 getBoundingClientRect 才是准确值。
+        // 但元素被移动过（浮层会挂到 body）时会重新连接，此时动画早已播完，
+        // animationend 不会再触发，所以额外加一个兜底定时器。
         const element = document.querySelector('.prose');
-        if (element) {
-            element.addEventListener('animationend', () => {
-                this.init();
-            }, { once: true });
-        } else {
-            console.debug('Animation element not found');
-        }
+        if (!element) return;
+
+        const run = () => {
+            if (this.tocEntries) return;
+            this.init();
+        };
+
+        element.addEventListener('animationend', run, { once: true });
+        setTimeout(run, 1000);
     };
 
     init() {
-        this.tocEl = document.getElementById(
-            "toc-inner-wrapper"
-        );
-
-        if (!this.tocEl) return;
+        // 页面上可能有多个目录实例（右侧栏、侧栏卡片、浮层面板），
+        // 每个实例只能接管自己内部的链接，不能用全局选择器。
+        this.tocEl = this;
 
         this.tocEl.addEventListener("click", this.handleAnchorClick, {
             capture: true,
         });
 
-        this.activeIndicator = document.getElementById("active-indicator");
+        this.activeIndicator = this.querySelector(".active-indicator");
 
         this.tocEntries = Array.from(
-            document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
+            this.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
         );
 
         if (this.tocEntries.length === 0) return;
