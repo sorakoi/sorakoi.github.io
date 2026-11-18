@@ -188,6 +188,11 @@ const siteLang = lang.replace("_", "-");
 	display: none;
 }
 
+/* Center the desktop floating controls in one column beside the content. */
+body {
+	--floating-control-center: max(3.125rem, calc((100% - var(--page-width)) / 2 - 3.125rem));
+}
+
 /* Wide layout: full-width navbar that only reveals its bar on hover */
 :root.wide-layout #top-row {
 	max-width: 100%;
