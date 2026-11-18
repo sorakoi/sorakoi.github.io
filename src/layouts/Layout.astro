@@ -164,8 +164,6 @@ const siteLang = lang.replace("_", "-");
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
 
-		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
-		<div id="page-height-extend" class="hidden h-[300vh]"></div>
 	</body>
 </html>
 
@@ -243,7 +241,7 @@ const siteLang = lang.replace("_", "-");
 	#toc-rail { top: 0; pointer-events: none; }
 	#toc-rail > div { top: 100%; pointer-events: auto; }
 	@media (prefers-reduced-motion: no-preference) {
-		body:not(.article-scroll) #banner-wrapper { transition: height 350ms ease-in-out; }
+		html:not(.is-popstate) body:not(.article-scroll) #banner-wrapper { transition: height 350ms ease-in-out; }
 	}
 	.navbar-hidden {
 		@apply opacity-0 -translate-y-16
@@ -261,10 +259,7 @@ import {
 } from 'overlayscrollbars';
 import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
-import {
-	BANNER_HEIGHT,
-	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT
-} from "../constants/constants";
+import { BANNER_HEIGHT } from "../constants/constants";
 
 /* Preload fonts */
 // (async function() {
@@ -420,108 +415,60 @@ const setup = () => {
 		// Remove the delay for the first time page load
 		document.documentElement.style.setProperty('--content-delay', '0ms')
 
-		// prevent elements from overlapping the navbar
-		if (!bannerEnabled) {
-			return
-		}
-		let threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
-		let navbar = document.getElementById('navbar-wrapper')
-		if (!navbar || !document.body.classList.contains('home-page')) {
-			return
-		}
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden')
-		}
 	})
 	let finishArticleScroll: (() => void) | undefined;
+	let enteringArticle = false;
+	window.swup.hooks.on('visit:start', (visit: {
+		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean},
+		animation: {animate: boolean}
+	}) => {
+		finishArticleScroll?.();
+		// Preserve the current scroll range when replacing a long list with a short post.
+		document.body.style.minHeight = `${window.scrollY + window.innerHeight}px`;
+		enteringArticle = bannerEnabled && window.scrollY > 0 && document.body.classList.contains('home-page')
+			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
+			&& visit.scroll.reset && !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
+		if (enteringArticle) visit.animation.animate = false;
+		document.getElementById('toc-wrapper')?.classList.add('toc-not-ready');
+	});
 	window.swup.hooks.on('content:replace', (visit: {
 		to: {url: string, hash?: string}, history: {popstate: boolean}, scroll: {target?: string, reset: boolean}
 	}) => {
 		const banner = document.getElementById('banner-wrapper');
 		const body = document.body;
 		const startY = window.scrollY;
-		const trackScroll = banner && visit.scroll.reset && startY > 0 && body.classList.contains('home-page')
-			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
-			&& !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
 		const startHeight = banner?.offsetHeight ?? 0;
 		body.classList.toggle('home-page', pathsEqual(visit.to.url, url('/')));
-		if (trackScroll) {
+		if (enteringArticle && banner && startY > 0) {
 			body.classList.add('article-scroll');
 			document.querySelector('main')?.setAttribute('data-scroll-entry', '');
 			const endHeight = banner.offsetHeight;
 			visit.scroll.reset = false;
-			const inputs = new AbortController();
-			const { signal } = inputs;
-			let frame = 0;
+			const sync = () => {
+				const remaining = Math.min(1, window.scrollY / startY);
+				body.style.setProperty('--scroll-banner-height', `${endHeight + (startHeight - endHeight) * remaining}px`);
+				if (window.scrollY <= 0) finishArticleScroll?.();
+			};
 			finishArticleScroll = () => {
-				cancelAnimationFrame(frame);
-				inputs.abort();
+				window.removeEventListener('scroll', sync);
+				document.removeEventListener('scrollend', finishArticleScroll!);
 				body.classList.remove('article-scroll');
 				body.style.removeProperty('--scroll-banner-height');
-				document.getElementById('page-height-extend')?.classList.add('hidden');
+				body.style.removeProperty('min-height');
 				finishArticleScroll = undefined;
 			};
-			const cancel = () => finishArticleScroll?.();
-			for (const event of ['wheel', 'touchstart', 'pointerdown']) {
-				window.addEventListener(event, cancel, { passive: true, signal });
-			}
-			window.addEventListener('keydown', (event) => {
-				if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) cancel();
-			}, { signal });
+			window.addEventListener('scroll', sync, { passive: true });
+			document.addEventListener('scrollend', finishArticleScroll);
+			sync();
+			window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 
-			// Smoothstep's maximum slope is 1.5. Scale duration with distance to
-			// limit peak speed to 3000 CSS pixels/second, independent of frame rate.
-			const duration = Math.max(360, 1.5 * startY / 3);
-			const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-			const started = performance.now();
-			body.style.setProperty('--scroll-banner-height', `${startHeight}px`);
-			const step = (now: number) => {
-				const t = reducedMotion ? 1 : Math.min(1, Math.max(0, (now - started) / duration));
-				const remaining = 1 - t * t * (3 - 2 * t);
-				window.scrollTo({ top: startY * remaining, behavior: 'instant' });
-				const height = endHeight + (startHeight - endHeight) * (window.scrollY / startY);
-				body.style.setProperty('--scroll-banner-height', `${height}px`);
-				if (t === 1) cancel();
-				else frame = requestAnimationFrame(step);
-			};
-			frame = requestAnimationFrame(step);
 		}
 		initCustomScrollbar();
 	})
-	window.swup.hooks.on('visit:start', () => {
-		finishArticleScroll?.();
-		// increase the page height during page transition to prevent the scrolling animation from jumping
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
-
-		// Hide the TOC while scrolling back to top
-		let toc = document.getElementById('toc-wrapper');
-		if (toc) {
-			toc.classList.add('toc-not-ready')
-		}
-	});
-	window.swup.hooks.on('page:view', () => {
-		// hide the temp high element when the transition is done
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
-	});
-	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
-		setTimeout(() => {
-			const heightExtend = document.getElementById('page-height-extend')
-			if (heightExtend && !finishArticleScroll) {
-				heightExtend.classList.add('hidden')
-			}
-
-            // Just make the transition looks better
-            const toc = document.getElementById('toc-wrapper');
-            if (toc) {
-                toc.classList.remove('toc-not-ready')
-            }
-        }, 200)
+	window.swup.hooks.on('visit:end', () => {
+		if (!finishArticleScroll) document.body.style.removeProperty('min-height');
+		document.getElementById('toc-wrapper')?.classList.remove('toc-not-ready');
+		scrollFunction();
 	});
 }
 if (window?.swup?.hooks) {
@@ -554,16 +501,8 @@ function scrollFunction() {
 
 	if (!bannerEnabled) return
 	if (navbar) {
-		const NAVBAR_HEIGHT = 72
-		const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16			// The height the main panel overlaps the banner
-
-		const height = document.getElementById('banner-wrapper')!.offsetHeight;
-		let threshold = height - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden')
-		} else {
-			navbar.classList.remove('navbar-hidden')
-		}
+		const panel = document.getElementById('main-panel');
+		if (panel) navbar.classList.toggle('navbar-hidden', panel.getBoundingClientRect().top <= navbar.offsetHeight + 16);
 	}
 }
 window.onscroll = scrollFunction
