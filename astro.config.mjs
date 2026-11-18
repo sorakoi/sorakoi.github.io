@@ -28,6 +28,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 export default defineConfig({
 	site: "https://suzuka.moe/",
 	base: "/",
+	compressHTML: true,
 	trailingSlash: "always",
 	integrations: [
 		swup({
