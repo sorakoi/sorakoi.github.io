@@ -446,6 +446,26 @@ function init() {
 init();
 
 const setup = () => {
+	const physics = window.swup.findPlugin('SwupScrollPlugin')?.scrl?.options;
+	if (physics) {
+		const { acceleration, friction } = physics;
+		let enteringArticle = false;
+		window.swup.hooks.before('content:scroll', (visit: {
+			from: { url: string }, to: { url: string, hash?: string },
+			history: { popstate: boolean }, scroll: { target?: string }
+		}) => {
+			enteringArticle = !visit.history.popstate && !visit.to.hash && !visit.scroll.target
+				&& pathsEqual(new URL(visit.from.url, location.href).pathname, url('/'))
+				&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
+				&& window.scrollY > 0;
+		});
+		// Keep Swup's continuous scroll. Apply gentler physics only to this return to top.
+		window.swup.hooks.on('scroll:start', () => {
+			physics.acceleration = enteringArticle ? acceleration * 0.8 : acceleration;
+			physics.friction = enteringArticle ? friction + 0.02 : friction;
+			enteringArticle = false;
+		});
+	}
 	// TODO: temp solution to change the height of the banner
 /*
 	window.swup.hooks.on('animation:out:start', () => {
