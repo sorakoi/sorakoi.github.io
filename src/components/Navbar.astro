@@ -197,13 +197,18 @@ if (document.readyState === 'loading') {
   background: rgba(255, 255, 255, 0.53) !important;
   -webkit-backdrop-filter: blur(18px) saturate(135%);
   backdrop-filter: blur(18px) saturate(135%);
-  border: 0px solid rgba(255, 255, 255, 0.3);
+  transition-property: background-color;
 }
 
 /* 深色模式 */
 :global(.dark) #navbar .card-base {
   background: rgba(0, 0, 0, 0.52) !important;
-  border: 0px solid rgba(255, 255, 255, 0.1);
+
 }
 
+:global(html.wide-layout body.home-page:not([data-scrolled])) #navbar .card-base {
+  background-color: transparent !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
 </style>

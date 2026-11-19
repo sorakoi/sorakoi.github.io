@@ -22,12 +22,12 @@ html.is-animating .transition-swup-toc {
 }
 /* Animate the shell once. Swup owns subsequent page transitions. */
 @media (prefers-reduced-motion: no-preference) {
-    html:not([data-navigated]) :is(#navbar, #sidebar, #content-wrapper) {
+    html:not([data-navigated]) :is(#sidebar, #content-wrapper) {
         animation: page-entry 280ms ease-out both;
     }
-    /* Release the opacity animation so the navbar can sample the banner behind it. */
-    html:not([data-navigated]) #navbar {
-        animation-fill-mode: backwards;
+    /* Fade the glass surface itself so its parent never isolates the backdrop. */
+    html:not([data-navigated]) #navbar > div {
+        animation: page-entry 280ms ease-out backwards;
     }
 }
 @keyframes page-entry {
