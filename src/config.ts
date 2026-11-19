@@ -76,6 +76,11 @@ export const navBarConfig: NavBarConfig = {
 	],
 };
 
+export const authorBios: Record<string, string> = {
+	澄空学园信息部: "记录网站建设进展，整理开发指南。",
+	澄空学园新闻部: "分享学园近况、动画与游戏影像。",
+};
+
 export const profileConfig: ProfileConfig = {
 	avatar: "https://p.ssl.qhimg.com/t11938a0349d15dd62d0c09b88a.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "凉花",

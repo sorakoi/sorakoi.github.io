@@ -1,17 +1,29 @@
 <script lang="ts">
+import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 
+import { authorBios } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
 export let sortedPosts: Post[] = [];
+export let authorIcon: { body: string };
+export let articleIcon: { body: string };
 
 const params = new URLSearchParams(window.location.search);
 const tags = params.getAll("tag");
 const categories = params.getAll("category");
 const authors = params.has("author") ? params.getAll("author") : [];
 const uncategorized = params.get("uncategorized");
+
+$: authorCards = [...new Set(authors)]
+	.map((name) => ({
+		name,
+		bio: Object.hasOwn(authorBios, name) ? authorBios[name] : "",
+		count: sortedPosts.filter((post) => post.data.author === name).length,
+	}))
+	.filter((author) => author.count > 0);
 
 interface Post {
 	slug: string;
@@ -90,6 +102,26 @@ onMount(async () => {
 	groups = groupedPostsArray;
 });
 </script>
+
+{#each authorCards as author (author.name)}
+    <section class="card-base mb-4 flex items-center gap-4 px-6 py-5 md:px-8" aria-label={i18n(I18nKey.author)}>
+        <span aria-hidden="true" class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[var(--btn-regular-bg)] text-[var(--primary)]">
+            <Icon icon={{width: 24, height: 24, ...authorIcon}} class="text-3xl" />
+        </span>
+        <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h2 class="text-xl font-bold text-90">{author.name}</h2>
+            <span class="inline-flex items-center gap-1 whitespace-nowrap text-sm text-50">
+                <Icon icon={{width: 24, height: 24, ...articleIcon}} aria-hidden="true" />
+                {author.count} {i18n(author.count === 1 ? I18nKey.postCount : I18nKey.postsCount)}
+            </span>
+        </div>
+        {#if author.bio}
+            <p class="mt-2 text-sm text-75">{author.bio}</p>
+        {/if}
+        </div>
+    </section>
+{/each}
 
 <div class="card-base px-8 py-6">
     {#each groups as group}
