@@ -17,3 +17,5 @@ export const MAIN_PANEL_OVERLAPS_BANNER_HEIGHT = 3.5;
 
 // Page width: rem
 export const PAGE_WIDTH = 75;
+// Matches the width switch's Tailwind md breakpoint.
+export const WIDE_LAYOUT_QUERY = "(min-width: 768px)";

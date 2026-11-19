@@ -1,5 +1,5 @@
 ---
-title: Key『Summer Pockets Sunnyside Stories』オープニングムービー｜鈴木このみ「Luster piece」
+title: 《Summer Pockets Sunnyside Stories》开场动画「Luster piece」
 published: 2026-11-18
 description: Key 新作『Summer Pockets Sunnyside Stories』开场动画，主题曲「Luster piece」由鈴木このみ演唱。
 image: /images/poster-20261118.jpg

@@ -1,5 +1,5 @@
 ---
-title: 『きみが死ぬまで恋をしたい』第12話挿入歌「Cookie & Cream」MV
+title: 《与你相恋到生命尽头》插曲「Cookie & Cream」
 published: 2026-11-16
 description: TV 动画《与你相恋到生命尽头》第 12 话插入曲「Cookie & Cream」MV。
 image: /images/poster-20261116.jpg

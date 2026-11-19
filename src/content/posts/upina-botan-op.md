@@ -1,7 +1,7 @@
 ---
-title: オープニングムービー完全版｜TVアニメ『上伊那ぼたん、酔へる姿は百合の花』
+title: 《上伊那牡丹，醉姿如百合》完整版片头
 published: 2026-11-17
-description: TV 动画《上伊那牡丹，醉了便是百合花》开场动画完全版。
+description: TV 动画《上伊那牡丹，醉姿如百合》开场动画完全版。
 image: /images/poster-20261117.jpg
 tags: [影像]
 category: 记录
@@ -10,7 +10,7 @@ draft: false
 lang: zh_CN
 ---
 
-TV 动画《上伊那牡丹，醉了便是百合花》（上伊那ぼたん、酔へる姿は百合の花）开场动画完全版。
+TV 动画《上伊那牡丹，醉姿如百合》（上伊那ぼたん、酔へる姿は百合の花）开场动画完全版。
 
 <iframe width="100%" src="https://www.youtube.com/embed/fUU_VKLXzRQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 

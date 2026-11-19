@@ -70,6 +70,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
 </div>
 
 <script>
+import { WIDE_LAYOUT_QUERY } from "../constants/constants";
 function switchTheme() {
     if (localStorage.theme === 'dark') {
         document.documentElement.classList.remove('dark');
@@ -78,23 +79,6 @@ function switchTheme() {
         document.documentElement.classList.add('dark');
         localStorage.theme = 'dark';
     }
-}
-
-function updateWideBtn(wide: boolean) {
-    var btn = document.getElementById("wide-mode-switch");
-    if (!btn) return;
-    btn.style.color = wide ? "var(--primary)" : "";
-    btn.title = wide ? "切回标准宽度" : "切换为宽屏";
-}
-
-function applyWideMode(wide: boolean) {
-    document.documentElement.classList.toggle("wide-layout", wide);
-    localStorage.setItem("wideMode", String(wide));
-    updateWideBtn(wide);
-}
-
-function toggleWideMode() {
-    applyWideMode(!document.documentElement.classList.contains("wide-layout"));
 }
 
 function updateFontBtn(system: boolean) {
@@ -138,12 +122,23 @@ function loadButtonScript() {
         };
     }
 
-    let wideBtn = document.getElementById("wide-mode-switch");
+    const wideBtn = document.getElementById("wide-mode-switch");
     if (wideBtn) {
-        wideBtn.onclick = function () {
-            toggleWideMode();
+        const viewport = matchMedia(WIDE_LAYOUT_QUERY);
+        const syncWidth = () => {
+            const wide = viewport.matches && localStorage.getItem("wideMode") !== "false";
+            document.documentElement.classList.toggle("wide-layout", wide);
+            wideBtn.style.color = wide ? "var(--primary)" : "";
+            wideBtn.title = wide ? "切回标准宽度" : "切换为宽屏";
+            wideBtn.setAttribute("aria-pressed", String(wide));
         };
-        updateWideBtn(document.documentElement.classList.contains("wide-layout"));
+        wideBtn.onclick = () => {
+            if (!viewport.matches) return;
+            localStorage.setItem("wideMode", String(!document.documentElement.classList.contains("wide-layout")));
+            syncWidth();
+        };
+        viewport.addEventListener("change", syncWidth);
+        syncWidth();
     }
 
     let fontBtn = document.getElementById("font-mode-switch");

@@ -1,7 +1,7 @@
 ---
-title: 『凶乱令嬢ニア・リストン』片尾影像
+title: 《乱世千金倪亚·利斯顿》无字幕片尾
 published: 2026-11-14
-description: 《凶乱令嬢ニア・リストン》片尾影像，无字幕版。
+description: 《乱世千金倪亚·利斯顿》片尾影像，无字幕版。
 image: /images/kv1.webp
 tags: [影像]
 category: 记录

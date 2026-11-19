@@ -24,6 +24,7 @@ import {
 	LIGHT_MODE,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 	PAGE_WIDTH,
+	WIDE_LAYOUT_QUERY,
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
@@ -112,7 +113,7 @@ const siteLang = lang.replace("_", "-");
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, PAGE_WIDTH, configHue}}>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, PAGE_WIDTH, WIDE_LAYOUT_QUERY, configHue}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
 			switch (theme) {
@@ -135,7 +136,7 @@ const siteLang = lang.replace("_", "-");
 			document.documentElement.style.setProperty('--hue', hue);
 
 			// Restore the wide layout preference before first paint
-			document.documentElement.classList.toggle('wide-layout', localStorage.getItem('wideMode') !== 'false');
+			document.documentElement.classList.toggle('wide-layout', matchMedia(WIDE_LAYOUT_QUERY).matches && localStorage.getItem('wideMode') !== 'false');
 
 			// Font mode: apply before paint to avoid a flash of the wrong font
 			if (localStorage.getItem('fontMode') === 'system') {

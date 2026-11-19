@@ -1,5 +1,5 @@
 ---
-title: "TVアニメ『きみが死ぬまで恋をしたい』ノンクレジットオープニング映像 [Another ver.]｜ReoNa「Amore」"
+title: 《与你相恋到生命尽头》片头曲「Amore」特别版
 published: 2026-11-18
 description: TV 动画《与你相恋到生命尽头》无字幕 OP 影像 [Another ver.]，主题曲 ReoNa「Amore」。
 image: /images/poster-20261118b.jpg

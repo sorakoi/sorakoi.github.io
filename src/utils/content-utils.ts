@@ -12,7 +12,7 @@ async function getRawSortedPosts() {
 	const sorted = allBlogPosts.sort((a, b) => {
 		return (
 			b.data.published.getTime() - a.data.published.getTime() ||
-			a.data.title.localeCompare(b.data.title, "zh-CN")
+			b.id.localeCompare(a.id, "zh-CN")
 		);
 	});
 	return sorted;
