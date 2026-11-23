@@ -8,15 +8,14 @@ interface Props {
 }
 
 const { headings = [] } = Astro.props;
-const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
-<div id="toc-card-wrapper" class:list={[items.length ? "transition-swup-toc" : "hidden"]}>
-	{items.length > 0 && (
+<div id="toc-card-wrapper" class:list={[headings.length ? "transition-swup-toc" : "hidden"]}>
+	{headings.length > 0 && (
 		<div class="min-h-0 overflow-hidden">
 			<WidgetLayout name="目录" id="toc-card" class="block">
 				<div class="px-1 pb-1 max-h-[45vh] overflow-y-auto">
-					<TOC headings={items} class="text-sm" />
+					<TOC headings={headings} class="text-sm" />
 				</div>
 			</WidgetLayout>
 		</div>

@@ -1,12 +1,11 @@
 ---
+import BannerSlideshow from "@components/BannerSlideshow.astro";
 import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
 import TocFab from "@components/TocFab.astro";
 import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
-import { Icon } from "astro-icon/components";
-import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import { siteConfig } from "../config";
 import Layout from "./Layout.astro";
 
@@ -27,20 +26,9 @@ const {
 	setOGTypeArticle,
 	headings = [],
 } = Astro.props;
-const hasBannerCredit =
-	siteConfig.banner.enable && siteConfig.banner.credit.enable;
-const hasBannerLink = !!siteConfig.banner.credit.url;
-
-// Slideshow: fall back to a single slide when `images` is not configured.
-const bannerImages =
-	siteConfig.banner.images && siteConfig.banner.images.length > 0
-		? siteConfig.banner.images
-		: [{ src: siteConfig.banner.src, credit: siteConfig.banner.credit.text }];
-const bannerInterval = siteConfig.banner.interval ?? 8;
-const bannerCycle = bannerImages.length * bannerInterval;
-const bannerVisiblePct = 100 / bannerImages.length;
-const bannerFadeInPct = (1.2 / bannerCycle) * 100;
-const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
+const tocHeadings = siteConfig.toc.enable
+	? headings.filter((heading) => heading.depth <= 3)
+	: [];
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -54,30 +42,7 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 </div>
 
 <!-- Banner (slideshow) -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class="relative z-10 w-full overflow-hidden" style={`--banner-cycle: ${bannerCycle}s`}>
-    {bannerImages.map((item, index) => (
-        <div class="banner-slide" style={`animation-delay: ${index * bannerInterval - bannerCycle - 1.2}s`}>
-            <ImageWrapper alt="Banner image of the blog" class:list={["w-full h-full"]}
-                          src={item.src} position={siteConfig.banner.position}
-            >
-            </ImageWrapper>
-
-            <div class="banner-fade"></div>
-
-            {hasBannerCredit && <a href={siteConfig.banner.credit.url} target="_blank" rel="noopener" aria-label="Visit image source"
-                                   class:list={["group transition-all absolute flex justify-center items-center rounded-full " +
-                                   "px-3 bottom-4 right-4 bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
-            >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{item.credit || siteConfig.banner.credit.text}</div>
-                <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
-                    {"group-hover:opacity-100": hasBannerLink}]}
-                      name="fa6-solid:arrow-up-right-from-square">
-                </Icon>
-            </a>}
-        </div>
-    ))}
-</div>}
+{siteConfig.banner.enable && <BannerSlideshow />}
 
 <!-- Main content -->
 <div id="main-panel" class="relative w-full z-30 pointer-events-none">
@@ -86,7 +51,7 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
         <div id="main-grid" class=" w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
     mx-auto gap-4 px-0 md:px-4"
         >
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem]" headings={headings}></SideBar>
+            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem]" headings={tocHeadings}></SideBar>
 
             <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
                 <div id="content-wrapper">
@@ -109,40 +74,12 @@ const bannerFadeOutPct = ((bannerInterval + 1.2) / bannerCycle) * 100;
 </div>
 
 <div id="floating-toc-slot">
-    <TocFab headings={headings} />
+    <TocFab headings={tocHeadings} />
 </div>
 
-<Fragment set:html={`<style>
-.banner-slide {
-	position: absolute;
-	inset: 0;
-	opacity: 0;
-	animation: bannerCycle var(--banner-cycle, 24s) infinite;
-}
-.banner-slide:only-child { animation: none; opacity: 1; }
-.banner-fade {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 30%;
-	background: linear-gradient(to bottom, transparent 0%, var(--page-bg) 100%);
-	pointer-events: none;
-}
-/* Match the navbar's width transition (Layout.astro sets #top-row to 300ms) */
+<style>
 .layout-width-transition {
 	transition: max-width 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-@keyframes bannerCycle {
-	0% { opacity: 0; }
-	${bannerFadeInPct.toFixed(2)}% { opacity: 1; }
-	${bannerVisiblePct.toFixed(2)}% { opacity: 1; }
-	${bannerFadeOutPct.toFixed(2)}% { opacity: 0; }
-	100% { opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-	.banner-slide { animation: none; }
-	.banner-slide:first-child { opacity: 1; }
-}
-</style>`} />
+</style>
 </Layout>

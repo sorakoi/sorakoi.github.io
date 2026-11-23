@@ -5,6 +5,7 @@ import { onMount } from "svelte";
 import { authorBios } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
+import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
 export let sortedPosts: Post[] = [];
@@ -43,12 +44,6 @@ interface Group {
 
 let groups: Group[] = [];
 
-function formatDate(date: Date) {
-	const month = (date.getMonth() + 1).toString().padStart(2, "0");
-	const day = date.getDate().toString().padStart(2, "0");
-	return `${month}-${day}`;
-}
-
 function formatTag(tagList: string[]) {
 	return tagList.map((t) => `#${t}`).join(" ");
 }
@@ -82,7 +77,7 @@ onMount(async () => {
 
 	const grouped = filteredPosts.reduce(
 		(acc, post) => {
-			const year = post.data.published.getFullYear();
+			const year = post.data.published.getUTCFullYear();
 			if (!acc[year]) {
 				acc[year] = [];
 			}
@@ -150,7 +145,7 @@ onMount(async () => {
                     <div class="flex flex-row justify-start items-center h-full">
                         <!-- date -->
                         <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
-                            {formatDate(post.data.published)}
+                            {formatDateToYYYYMMDD(post.data.published).slice(5)}
                         </div>
 
                         <!-- dot and line -->

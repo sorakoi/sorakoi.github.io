@@ -418,7 +418,7 @@ const setup = () => {
 		finishArticleScroll?.();
 		// Preserve the current scroll range when replacing a long list with a short post.
 		document.body.style.minHeight = `${window.scrollY + window.innerHeight}px`;
-		enteringArticle = bannerEnabled && window.scrollY > 0 && document.body.classList.contains('home-page')
+		enteringArticle = bannerEnabled && document.body.classList.contains('home-page')
 			&& new URL(visit.to.url, location.href).pathname.startsWith(url('/posts/'))
 			&& visit.scroll.reset && !visit.history.popstate && !visit.to.hash && !visit.scroll.target;
 		if (enteringArticle) visit.animation.animate = false;
@@ -434,8 +434,8 @@ const setup = () => {
 		const body = document.body;
 		const startY = window.scrollY;
 		const startHeight = banner?.getBoundingClientRect().height ?? 0;
-		body.classList.toggle('home-page', pathsEqual(visit.to.url, url('/')));
-		if (enteringArticle && banner && startY > 0) {
+		body.classList.toggle('home-page', pathsEqual(new URL(visit.to.url, location.href).pathname, url('/')));
+		if (enteringArticle && banner) {
 			body.classList.add('article-scroll');
 			const endHeight = banner.getBoundingClientRect().height;
 			visit.scroll.reset = false;

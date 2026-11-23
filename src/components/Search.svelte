@@ -6,11 +6,9 @@ import { url } from "@utils/url-utils.ts";
 import { onMount } from "svelte";
 import type { SearchResult } from "@/global";
 
-let keywordDesktop = "";
-let keywordMobile = "";
+let keyword = "";
 let result: SearchResult[] = [];
-let isSearching = false;
-let pagefindLoaded = false;
+let requestId = 0;
 let initialized = false;
 
 const fakeResult: SearchResult[] = [
@@ -47,95 +45,54 @@ const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
 	}
 };
 
-const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
-	if (!keyword) {
-		setPanelVisibility(false, isDesktop);
+async function search(query: string) {
+	const id = ++requestId;
+	const desktop = matchMedia("(min-width: 1024px)").matches;
+	if (!query.trim()) {
 		result = [];
+		setPanelVisibility(false, desktop);
 		return;
 	}
-
-	if (!initialized) {
-		return;
-	}
-
-	isSearching = true;
 
 	try {
-		let searchResults: SearchResult[] = [];
-
-		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
-			const response = await window.pagefind.search(keyword);
-			searchResults = await Promise.all(
-				response.results.map((item) => item.data()),
-			);
-		} else if (import.meta.env.DEV) {
-			searchResults = fakeResult;
-		} else {
-			searchResults = [];
-			console.error("Pagefind is not available in production environment.");
-		}
-
-		result = searchResults;
-		setPanelVisibility(result.length > 0, isDesktop);
+		const results = import.meta.env.DEV
+			? fakeResult
+			: await Promise.all(
+					(await window.pagefind.search(query)).results.map((item) =>
+						item.data(),
+					),
+				);
+		if (id !== requestId) return;
+		result = results;
+		setPanelVisibility(
+			results.length > 0 &&
+				document.activeElement?.closest("#search-bar") != null,
+			desktop,
+		);
 	} catch (error) {
+		if (id !== requestId) return;
 		console.error("Search error:", error);
 		result = [];
-		setPanelVisibility(false, isDesktop);
-	} finally {
-		isSearching = false;
+		setPanelVisibility(false, desktop);
 	}
-};
+}
 
-onMount(() => {
-	const initializeSearch = () => {
-		initialized = true;
-		pagefindLoaded =
-			typeof window !== "undefined" &&
-			!!window.pagefind &&
-			typeof window.pagefind.search === "function";
-		console.log("Pagefind status on init:", pagefindLoaded);
-		if (keywordDesktop) search(keywordDesktop, true);
-		if (keywordMobile) search(keywordMobile, false);
-	};
-
-	if (import.meta.env.DEV) {
-		console.log(
-			"Pagefind is not available in development mode. Using mock data.",
-		);
-		initializeSearch();
-	} else {
-		document.addEventListener("pagefindready", () => {
-			console.log("Pagefind ready event received.");
-			initializeSearch();
-		});
-		document.addEventListener("pagefindloaderror", () => {
-			console.warn(
-				"Pagefind load error event received. Search functionality will be limited.",
-			);
-			initializeSearch(); // Initialize with pagefindLoaded as false
-		});
-
-		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
-		setTimeout(() => {
-			if (!initialized) {
-				console.log("Fallback: Initializing search after timeout.");
-				initializeSearch();
-			}
-		}, 2000); // Adjust timeout as needed
+onMount(async () => {
+	if (import.meta.env.PROD) {
+		try {
+			const scriptUrl = url("/pagefind/pagefind.js");
+			const pagefind = await import(/* @vite-ignore */ scriptUrl);
+			await pagefind.options({ excerptLength: 20 });
+			window.pagefind = pagefind;
+		} catch (error) {
+			console.error("Failed to load Pagefind:", error);
+			return;
+		}
 	}
+	initialized = true;
 });
 
-$: if (initialized && keywordDesktop) {
-	(async () => {
-		await search(keywordDesktop, true);
-	})();
-}
-
-$: if (initialized && keywordMobile) {
-	(async () => {
-		await search(keywordMobile, false);
-	})();
-}
+$: if (initialized) search(keyword);
 </script>
 
 <!-- search bar for desktop view -->
@@ -144,7 +101,7 @@ $: if (initialized && keywordMobile) {
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+    <input placeholder="{i18n(I18nKey.search)}" bind:value={keyword} on:focus={() => initialized && search(keyword)}
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
     >
@@ -166,7 +123,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input placeholder="Search" bind:value={keyword}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >

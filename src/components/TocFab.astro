@@ -8,24 +8,23 @@ interface Props {
 }
 
 const { headings = [] } = Astro.props;
-// 收录一级到三级标题：不少文章直接用 ### 写小标题，只留 h1/h2 会导致索引为空
-const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
 {
-	items.length > 0 && (
+	headings.length > 0 && (
 		<floating-toc class="toc-fab" data-toc-fab role="complementary" aria-label="文章目录">
 			<button
 				type="button"
 				id="toc-fab-btn"
 				aria-label="打开文章目录"
+				aria-controls="toc-fab-panel"
 				aria-expanded="false"
 				class="floating-control"
 			>
 				<Icon name="material-symbols:list-rounded" class="text-[2rem]"></Icon>
 			</button>
 
-			<div id="toc-fab-panel" class="toc-fab-panel card-base">
+			<div id="toc-fab-panel" class="toc-fab-panel card-base" inert>
 				<div class="flex items-center justify-between px-3 pt-3 pb-1">
 					<span class="text-sm font-bold text-neutral-900 dark:text-neutral-100 transition">目录</span>
 					<button
@@ -38,7 +37,7 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					</button>
 				</div>
 				<div class="px-1 pb-3 max-h-[60vh] overflow-y-auto">
-					<TOC headings={items} class="text-sm"></TOC>
+					<TOC headings={headings} class="text-sm"></TOC>
 				</div>
 			</div>
 		</floating-toc>
@@ -92,12 +91,15 @@ const items = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 			if (this.controller) return;
 			const btn = fab.querySelector<HTMLButtonElement>("#toc-fab-btn");
 			const close = fab.querySelector("#toc-fab-close");
-			if (!btn) return;
+			const panel = fab.querySelector<HTMLElement>("#toc-fab-panel");
+			if (!btn || !panel) return;
 			const controller = new AbortController();
 			this.controller = controller;
 			const { signal } = controller;
 
 			const toggle = (open: boolean) => {
+				if (!open && panel.contains(document.activeElement)) btn.focus({ preventScroll: true });
+				panel.inert = !open;
 				fab.classList.toggle("is-open", open);
 				btn.setAttribute("aria-expanded", String(open));
 			};
