@@ -7,9 +7,12 @@ const { banner } = siteConfig;
 const images = banner.images?.length ? banner.images : [{ src: banner.src }];
 const creditUrl = banner.credit.url?.trim();
 const Credit = creditUrl ? "a" : "span";
+const intervalMs = (banner.interval ?? 8) * 1000;
+const fadeMs = Math.min(1200, intervalMs);
 ---
 
-<div id="banner-wrapper" class="relative z-10 w-full overflow-hidden" data-interval={banner.interval ?? 8}>
+<banner-slideshow id="banner-wrapper" class="relative block z-10 w-full overflow-hidden"
+    data-interval-ms={intervalMs} data-first-hold-ms={intervalMs - fadeMs} style={`--banner-fade: ${fadeMs}ms`}>
     {images.map((image, index) => {
         const Container = index === 0 ? "div" : "template";
         return (
@@ -30,7 +33,7 @@ const Credit = creditUrl ? "a" : "span";
             {creditUrl && <Icon class="transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0 group-hover:opacity-100" name="fa6-solid:arrow-up-right-from-square" />}
         </Credit>
     )}
-</div>
+</banner-slideshow>
 
 <style>
     .banner-slide {
@@ -39,12 +42,12 @@ const Credit = creditUrl ? "a" : "span";
         opacity: 0;
         pointer-events: none;
         /* Keep the outgoing image behind the incoming one until the fade completes. */
-        transition: opacity 0s 1.2s;
+        transition: opacity 0s var(--banner-fade);
     }
     .banner-slide[data-current] {
         z-index: 1;
         opacity: 1;
-        transition: opacity 1.2s ease;
+        transition: opacity var(--banner-fade) ease;
     }
     .banner-fade {
         background: linear-gradient(to bottom, transparent, var(--page-bg));
@@ -55,14 +58,13 @@ const Credit = creditUrl ? "a" : "span";
 </style>
 
 <script>
-    // The banner is outside Swup's replacement containers and persists across visits.
-    const banner = document.getElementById("banner-wrapper");
-    if (banner) {
+    function startSlideshow(banner: HTMLElement) {
         const slides = Array.from(banner.querySelectorAll<HTMLElement>(".banner-slide"));
+        if (slides.length < 2) return;
         const credit = banner.querySelector("[data-banner-credit]");
-        const interval = Number(banner.dataset.interval) * 1000;
+        const interval = Number(banner.dataset.intervalMs);
         const motion = matchMedia("(prefers-reduced-motion: reduce)");
-        let current = 0;
+        let current = slides.findIndex(slide => slide.hasAttribute("data-current"));
         let timer = 0;
 
         function show(index: number) {
@@ -72,7 +74,7 @@ const Credit = creditUrl ? "a" : "span";
             current = index;
         }
 
-        function prepare(index: number) {
+        function prepare(index: number, hold: number) {
             const slide = slides[index];
             const template = slide.querySelector("template");
             if (template) {
@@ -81,13 +83,13 @@ const Credit = creditUrl ? "a" : "span";
                 template.replaceWith(template.content);
             }
             const image = slide.querySelector("img")!;
+            const decoded = image.decode().then(() => true, () => false);
             const pending = window.setTimeout(async () => {
-                // Keep the current image visible while a slow successor finishes loading.
-                const ready = await image.decode().then(() => true, () => false);
+                const ready = await decoded;
                 if (pending !== timer) return;
                 if (ready) show(index);
-                prepare((index + 1) % slides.length);
-            }, interval);
+                prepare((index + 1) % slides.length, interval);
+            }, hold);
             timer = pending;
         }
 
@@ -95,9 +97,30 @@ const Credit = creditUrl ? "a" : "span";
             clearTimeout(timer);
             timer = 0;
             if (motion.matches) show(0);
-            else if (slides.length > 1) prepare((current + 1) % slides.length);
+            // The initial image is already fully visible, so its first hold excludes the fade.
+            else prepare((current + 1) % slides.length, Number(banner.dataset.firstHoldMs));
         }
         motion.addEventListener("change", syncMotion);
         syncMotion();
+        return () => {
+            motion.removeEventListener("change", syncMotion);
+            clearTimeout(timer);
+            timer = 0;
+        };
+    }
+
+    // Swup keeps this element across visits but can evaluate its inline module again.
+    if (!customElements.get("banner-slideshow")) {
+        customElements.define("banner-slideshow", class extends HTMLElement {
+            stop?: () => void;
+
+            connectedCallback() {
+                this.stop = startSlideshow(this);
+            }
+
+            disconnectedCallback() {
+                this.stop?.();
+            }
+        });
     }
 </script>
