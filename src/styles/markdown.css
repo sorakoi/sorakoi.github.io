@@ -132,5 +132,37 @@
         overflow-x: auto;
         margin: 1em 0;
     }
+
+    @media (max-width: 767px) {
+        .magical-sugar-story figcaption {
+            margin: 0;
+            padding: 1.25rem;
+            background: #e8e0d5;
+            color: #514b60;
+            font: 1.1rem/1.95 "Yu Mincho", "Hiragino Mincho ProN", serif;
+            text-align: center;
+        }
+        .magical-sugar-story p { margin: 0 0 1.25em; }
+        .magical-sugar-story p:last-child { margin-bottom: 0; }
+        .magical-sugar-story b {
+            display: inline-block;
+            padding: 0 .22em;
+            background: #857047;
+            color: white;
+            line-height: 1.5;
+        }
+        .magical-sugar-story .lilac { background: #78669e; }
+        .magical-sugar-story .violet { background: #655f73; }
+        .magical-sugar-story figcaption::after {
+            content: "";
+            display: block;
+            width: 7.5rem;
+            aspect-ratio: 265 / 241;
+            margin-left: auto;
+            background: url("/images/magical-sugar-story.webp") right bottom / 484.15% auto;
+            mask-image: linear-gradient(to bottom, transparent, black 10%), linear-gradient(to right, transparent, black 10%);
+            mask-composite: intersect;
+        }
+    }
     
 }
